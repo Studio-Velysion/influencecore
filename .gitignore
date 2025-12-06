@@ -39,3 +39,6 @@ next-env.d.ts
 # prisma
 /prisma/migrations
 
+# scripts avec tokens (ne pas commiter)
+scripts/push-to-github.ps1
+

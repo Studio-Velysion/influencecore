@@ -41,10 +41,22 @@ jobs:
           port: ${{ secrets.VPS_PORT || 22 }}
           script: |
             cd ${{ secrets.VPS_APP_PATH || '/var/www/influencecore' }}
+            
+            # Si c'est la première fois, exécuter le script d'installation
+            if [ ! -f ".env" ]; then
+              echo "🔧 Première installation détectée..."
+              chmod +x scripts/auto-deploy-server.sh
+              sudo ./scripts/auto-deploy-server.sh
+            fi
+            
+            # Mettre à jour le code
+            echo "📥 Mise à jour du code..."
             git pull origin main
-            npm ci --production
-            npm run db:generate
-            npm run build
-            pm2 restart influencecore || pm2 start npm --name influencecore -- start
+            
+            # Exécuter le script de déploiement
+            echo "🚀 Déploiement de l'application..."
+            chmod +x scripts/deploy-app.sh
+            ./scripts/deploy-app.sh
+            
             echo "✅ Déploiement terminé avec succès!"
 

@@ -178,7 +178,7 @@ log_success "Fichier docker-compose.db.yml créé"
 cd "$APP_DIR"
 if [ ! "$(docker ps -q -f name=${APP_NAME}-postgres)" ]; then
     log_info "Démarrage de PostgreSQL..."
-    docker-compose -f docker-compose.db.yml up -d
+    docker compose -f docker-compose.db.yml up -d
     
     # Attendre que PostgreSQL soit prêt
     log_info "Attente que PostgreSQL soit prêt..."

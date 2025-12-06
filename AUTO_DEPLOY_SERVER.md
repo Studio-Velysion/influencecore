@@ -161,7 +161,7 @@ docker exec -it influencecore-postgres psql -U influencecore -d influencecore
 
 ```bash
 cd /var/www/influencecore
-docker-compose -f docker-compose.db.yml restart
+docker compose -f docker-compose.db.yml restart
 ```
 
 ### Voir les logs PostgreSQL
@@ -260,7 +260,7 @@ pm2 monit                    # Monitorer
 # Docker
 docker ps                     # Containers en cours
 docker logs influencecore-postgres  # Logs PostgreSQL
-docker-compose -f docker-compose.db.yml restart  # Redémarrer
+docker compose -f docker-compose.db.yml restart  # Redémarrer
 
 # Git
 git pull origin main          # Mettre à jour le code

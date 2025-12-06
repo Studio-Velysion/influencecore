@@ -62,7 +62,7 @@ log_info "Étape 2/6: Vérification de PostgreSQL..."
 if ! docker ps | grep -q "${APP_NAME}-postgres"; then
     log_warning "PostgreSQL n'est pas en cours d'exécution"
     log_info "Démarrage de PostgreSQL..."
-    docker-compose -f docker-compose.db.yml up -d
+    docker compose -f docker-compose.db.yml up -d
     
     # Attendre que PostgreSQL soit prêt
     log_info "Attente que PostgreSQL soit prêt..."

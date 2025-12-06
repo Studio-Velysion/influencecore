@@ -1,0 +1,254 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  passwordHash  String    @map("password_hash")
+  name          String?
+  pseudo        String?
+  avatar        String?
+  links         Json?     // { youtube, twitch, tiktok, etc. }
+  isAdmin       Boolean   @default(false) @map("is_admin")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  videoIdeas    VideoIdea[]
+  videoScripts  VideoScript[]
+  quickNotes    QuickNote[]
+  userRoles     UserRole[]
+  subscriptions UserSubscription[]
+
+  @@map("users")
+}
+
+model VideoIdea {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  title       String
+  concept     String?  @db.Text
+  platform    String?  // YouTube, Twitch, TikTok, etc.
+  format      String?  // Long, Short, Live
+  status      String   @default("Idée") // Idée, Écriture, Tournage, Montage, Programmée, Publiée
+  priority    String?  // Haute, Moyenne, Basse
+  targetDate  DateTime? @map("target_date")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scripts     VideoScript[]
+
+  @@map("video_ideas")
+}
+
+model VideoScript {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  videoIdeaId String?  @map("video_idea_id")
+  title       String
+  content     Json     // Structure: { hook, introduction, parts: [], outro, cta }
+  checklist   Json?    // { tournage: [], montage: [] }
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  videoIdea   VideoIdea? @relation(fields: [videoIdeaId], references: [id], onDelete: SetNull)
+
+  @@map("video_scripts")
+}
+
+model QuickNote {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  content   String   @db.Text
+  tag       String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("quick_notes")
+}
+
+// Système de rôles et permissions
+model Role {
+  id          String    @id @default(uuid())
+  name        String    @unique
+  description String?   @db.Text
+  isSystem    Boolean   @default(false) @map("is_system") // Rôles système non supprimables
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  permissions RolePermission[]
+  userRoles   UserRole[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String    @id @default(uuid())
+  key         String    @unique // Ex: "ideas.create", "scripts.delete", "admin.access"
+  name        String
+  description String?   @db.Text
+  category    String?   // Ex: "ideas", "scripts", "admin", "users"
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  rolePermissions RolePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  id           String   @id @default(uuid())
+  roleId       String   @map("role_id")
+  permissionId String   @map("permission_id")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  roleId    String   @map("role_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@map("user_roles")
+}
+
+// Système d'abonnements
+model SubscriptionPlan {
+  id          String    @id @default(uuid())
+  name        String    // Ex: "Starter", "Pro", "Premium"
+  slug        String    @unique // Ex: "starter", "pro", "premium"
+  description String?   @db.Text
+  price       Decimal   @db.Decimal(10, 2) // Prix de base
+  currency    String    @default("EUR")
+  interval    String    @default("month") // month, year
+  features    Json?     // Liste des fonctionnalités
+  isActive    Boolean   @default(true) @map("is_active")
+  isUnlimited Boolean   @default(false) @map("is_unlimited") // Plan illimité
+  displayOrder Int      @default(0) @map("display_order")
+  // Stripe
+  stripePriceId String? @unique @map("stripe_price_id") // ID du prix Stripe
+  stripeProductId String? @map("stripe_product_id") // ID du produit Stripe
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  discounts   SubscriptionDiscount[]
+  subscriptions UserSubscription[]
+
+  @@map("subscription_plans")
+}
+
+model SubscriptionDiscount {
+  id          String    @id @default(uuid())
+  planId      String    @map("plan_id")
+  code        String?   @unique // Code promo (optionnel)
+  name        String    // Nom de la réduction
+  description String?   @db.Text
+  type        String    // "percentage" ou "fixed"
+  value       Decimal   @db.Decimal(10, 2) // Pourcentage ou montant fixe
+  isActive    Boolean   @default(true) @map("is_active")
+  validFrom   DateTime? @map("valid_from")
+  validUntil  DateTime? @map("valid_until")
+  maxUses     Int?      @map("max_uses") // Nombre max d'utilisations
+  currentUses Int       @default(0) @map("current_uses")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  plan SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@map("subscription_discounts")
+}
+
+model UserSubscription {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  planId      String    @map("plan_id")
+  status      String    @default("active") // active, cancelled, expired, unlimited, trialing, past_due
+  isUnlimited Boolean   @default(false) @map("is_unlimited") // Abonnement illimité gratuit
+  pricePaid   Decimal?  @db.Decimal(10, 2) @map("price_paid") // Prix payé (si applicable)
+  discountId   String?   @map("discount_id")
+  startedAt   DateTime  @default(now()) @map("started_at")
+  expiresAt   DateTime? @map("expires_at") // null si illimité
+  cancelledAt DateTime? @map("cancelled_at")
+  // Stripe
+  stripeSubscriptionId String? @unique @map("stripe_subscription_id")
+  stripeCustomerId    String? @map("stripe_customer_id")
+  stripePriceId       String? @map("stripe_price_id")
+  stripePaymentIntentId String? @map("stripe_payment_intent_id")
+  currentPeriodStart  DateTime? @map("current_period_start")
+  currentPeriodEnd    DateTime? @map("current_period_end")
+  cancelAtPeriodEnd   Boolean   @default(false) @map("cancel_at_period_end")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan     SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Restrict)
+  discount SubscriptionDiscount? @relation(fields: [discountId], references: [id], onDelete: SetNull)
+
+  @@map("user_subscriptions")
+}
+
+// Modèles futurs (préparés pour V2+)
+// model Moodboard {
+//   id        String   @id @default(uuid())
+//   userId    String   @map("user_id")
+//   title     String
+//   content   Json
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+//   @@map("moodboards")
+// }
+
+// model Sponsor {
+//   id        String   @id @default(uuid())
+//   userId    String   @map("user_id")
+//   name      String
+//   contact   Json
+//   contracts Json?
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+//   @@map("sponsors")
+// }
+
+// model Collaboration {
+//   id        String   @id @default(uuid())
+//   userId    String   @map("user_id")
+//   title     String
+//   partners  Json
+//   status    String
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+//   @@map("collaborations")
+// }
+

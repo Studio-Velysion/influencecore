@@ -1,25 +1,44 @@
-# 🔧 Modifier l'URL dans le VPS
+# 🔧 Modifier l'URL et le Port dans le VPS
 
-Guide pour modifier l'URL de l'application (NEXTAUTH_URL) sur le serveur VPS.
+Guide pour modifier l'URL (NEXTAUTH_URL) et le port de l'application sur le serveur VPS.
 
 ---
 
-## 🚀 Méthode 1 : Script Automatique (Recommandé)
+## 🚀 Méthode 1 : Script Automatique URL + Port (Recommandé)
 
-### Script Simple
+### Script Complet (URL + Port)
+
+```bash
+cd /var/www/influencecore
+chmod +x scripts/update-url-port.sh
+./scripts/update-url-port.sh
+```
+
+Le script va :
+- ✅ Afficher l'URL et le port actuels
+- ✅ Vous demander la nouvelle URL et le nouveau port
+- ✅ Mettre à jour le fichier `.env` (NEXTAUTH_URL et PORT)
+- ✅ Mettre à jour `ecosystem.config.js` si présent
+- ✅ Créer une sauvegarde automatique
+- ✅ Démarrer/redémarrer l'application avec PM2 si nécessaire
+
+### Avec paramètres
+
+```bash
+# URL et port en paramètres
+./scripts/update-url-port.sh "https://votre-domaine.com" 3000
+
+# Seulement l'URL (le port sera demandé)
+./scripts/update-url-port.sh "https://votre-domaine.com"
+```
+
+### Script Simple (URL seulement)
 
 ```bash
 cd /var/www/influencecore
 chmod +x scripts/update-url.sh
 ./scripts/update-url.sh
 ```
-
-Le script va :
-- ✅ Afficher l'URL actuelle
-- ✅ Vous demander la nouvelle URL
-- ✅ Mettre à jour le fichier `.env`
-- ✅ Créer une sauvegarde automatique
-- ✅ Proposer de redémarrer l'application
 
 ### Avec URL en paramètre
 
@@ -57,17 +76,21 @@ cd /var/www/influencecore
 nano .env
 ```
 
-### Étape 2 : Modifier NEXTAUTH_URL
+### Étape 2 : Modifier NEXTAUTH_URL et PORT
 
-Trouvez la ligne :
+Trouvez les lignes :
 ```env
 NEXTAUTH_URL="http://localhost:3000"
+PORT=3000
 ```
 
-Modifiez-la avec votre nouvelle URL :
+Modifiez-les avec votre nouvelle URL et port :
 ```env
 NEXTAUTH_URL="https://votre-domaine.com"
+PORT=3000
 ```
+
+**Note** : Si votre URL contient déjà le port (ex: `http://123.45.67.89:3000`), assurez-vous que le PORT dans `.env` correspond.
 
 ### Étape 3 : Sauvegarder
 

@@ -117,17 +117,23 @@ echo ""
 log_info "4. Vérification du firewall..."
 
 if command -v ufw &> /dev/null; then
-    UFW_STATUS=$(ufw status | head -1)
+    UFW_STATUS=$(sudo ufw status | head -1)
     if echo "$UFW_STATUS" | grep -q "Status: active"; then
-        log_warning "UFW est actif"
-        if ufw status | grep -q "$PORT/tcp"; then
+        log_success "UFW est actif"
+        if sudo ufw status | grep -q "$PORT/tcp"; then
             log_success "Port $PORT autorisé dans UFW"
         else
             log_error "Port $PORT NON autorisé dans UFW"
             log_info "Autorisez avec: sudo ufw allow $PORT/tcp"
+            log_info "Ou utilisez: ./scripts/activate-firewall.sh $PORT"
         fi
     else
-        log_info "UFW est inactif"
+        log_warning "UFW est inactif (les règles ne sont pas appliquées)"
+        log_info "Activez avec: sudo ufw enable"
+        log_info "Ou utilisez: ./scripts/activate-firewall.sh $PORT"
+        if sudo ufw status | grep -q "$PORT/tcp"; then
+            log_warning "Le port $PORT est configuré mais UFW est inactif"
+        fi
     fi
 elif command -v firewall-cmd &> /dev/null; then
     log_info "Firewalld détecté"

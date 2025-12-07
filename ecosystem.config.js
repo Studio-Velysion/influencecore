@@ -6,8 +6,8 @@ module.exports = {
   apps: [
     {
       name: 'influencecore',
-      script: 'npm',
-      args: 'start',
+      script: 'npx',
+      args: 'next start -H 0.0.0.0',
       cwd: '/var/www/influencecore',
       instances: 1,
       exec_mode: 'fork',

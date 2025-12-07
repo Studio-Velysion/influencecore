@@ -260,7 +260,11 @@ pm2 startup
 - [ ] Fichier `.env` créé avec toutes les variables
 - [ ] Base de données configurée
 - [ ] PM2 configuré et application démarrée
+- [ ] Next.js configuré pour écouter sur `0.0.0.0` (accès externe)
+- [ ] Port ouvert dans le firewall (serveur et provider)
+- [ ] Scripts de gestion rendus exécutables
 - [ ] Test de déploiement réussi
+- [ ] Application accessible depuis l'extérieur
 
 ---
 
@@ -278,6 +282,225 @@ pm2 startup
 ### Application ne redémarre pas
 - Vérifiez que PM2 est installé
 - Vérifiez les logs : `pm2 logs influencecore`
+
+---
+
+## 🛠️ Scripts de Gestion et Dépannage
+
+Plusieurs scripts ont été créés pour faciliter la gestion et le dépannage de l'application sur le serveur.
+
+### Scripts Disponibles
+
+#### 1. `fix-all.sh` - Correction Automatique (Recommandé)
+
+Script tout-en-un qui résout automatiquement les problèmes courants :
+
+```bash
+cd /var/www/influencecore
+chmod +x scripts/fix-all.sh
+./scripts/fix-all.sh
+```
+
+**Fonctionnalités :**
+- ✅ Résout les conflits Git automatiquement
+- ✅ Met à jour le code depuis GitHub
+- ✅ Configure Next.js pour écouter sur `0.0.0.0` (accès externe)
+- ✅ Vérifie et ouvre le port dans le firewall
+- ✅ Redémarre l'application avec PM2
+
+#### 2. `update-url-port.sh` - Modifier l'URL et le Port
+
+Permet de modifier facilement l'URL et le port de l'application :
+
+```bash
+cd /var/www/influencecore
+chmod +x scripts/update-url-port.sh
+
+# Mode interactif
+./scripts/update-url-port.sh
+
+# Avec paramètres
+./scripts/update-url-port.sh "http://123.45.67.89" 3000
+```
+
+**Fonctionnalités :**
+- ✅ Affiche l'URL et le port actuels
+- ✅ Met à jour `.env` (NEXTAUTH_URL et PORT)
+- ✅ Met à jour `ecosystem.config.js` si présent
+- ✅ Crée une sauvegarde automatique
+- ✅ Démarrer/redémarre l'application avec PM2
+
+#### 3. `start-app.sh` - Démarrer l'Application
+
+Démarre l'application avec PM2 :
+
+```bash
+cd /var/www/influencecore
+chmod +x scripts/start-app.sh
+./scripts/start-app.sh
+```
+
+**Fonctionnalités :**
+- ✅ Vérifie que le fichier `.env` existe
+- ✅ Vérifie si PM2 est installé
+- ✅ Démarre l'application si elle n'est pas en cours
+- ✅ Redémarre l'application si elle tourne déjà (optionnel)
+- ✅ Affiche le statut et les commandes utiles
+
+#### 4. `check-accessibility.sh` - Vérifier l'Accessibilité
+
+Vérifie complètement l'accessibilité de l'application :
+
+```bash
+cd /var/www/influencecore
+chmod +x scripts/check-accessibility.sh
+./scripts/check-accessibility.sh
+```
+
+**Vérifications :**
+- ✅ Configuration (URL, Port)
+- ✅ Statut PM2
+- ✅ Port en écoute
+- ✅ Configuration du firewall
+- ✅ Connexion locale
+- ✅ IP publique
+
+#### 5. `fix-git-and-update.sh` - Résoudre les Conflits Git
+
+Résout les conflits Git et met à jour le code :
+
+```bash
+cd /var/www/influencecore
+chmod +x scripts/fix-git-and-update.sh
+./scripts/fix-git-and-update.sh
+```
+
+**Fonctionnalités :**
+- ✅ Détecte les modifications locales
+- ✅ Propose de sauvegarder ou écraser
+- ✅ Met à jour depuis GitHub
+- ✅ Rend les scripts exécutables
+
+### Problèmes Courants et Solutions
+
+#### Conflit Git lors du pull
+
+```bash
+# Solution rapide
+git stash
+git pull origin main
+
+# Ou utiliser le script
+./scripts/fix-git-and-update.sh
+```
+
+#### Application non accessible depuis l'extérieur
+
+**Cause :** Next.js écoute sur `127.0.0.1` au lieu de `0.0.0.0`
+
+**Solution :** Le `package.json` a été configuré pour écouter sur `0.0.0.0` :
+```json
+"start": "next start -H 0.0.0.0"
+```
+
+Si le problème persiste :
+```bash
+./scripts/fix-all.sh
+```
+
+#### PM2 ne trouve pas l'application
+
+```bash
+# Démarrer l'application
+./scripts/start-app.sh
+
+# Ou manuellement
+pm2 start npm --name influencecore -- start
+pm2 save
+```
+
+#### Port bloqué par le firewall
+
+```bash
+# Pour UFW (Ubuntu/Debian)
+sudo ufw allow 3000/tcp
+sudo ufw reload
+
+# Vérifier
+sudo ufw status
+```
+
+### Configuration Next.js pour Accès Externe
+
+L'application est maintenant configurée pour être accessible depuis l'extérieur :
+
+- **`package.json`** : Script `start` modifié pour écouter sur `0.0.0.0`
+- **`.env`** : Variable `HOSTNAME=0.0.0.0` ajoutée automatiquement par les scripts
+
+### Documentation Complémentaire
+
+- **`RESOUDRE_PROBLEMES.md`** : Guide complet de résolution des problèmes
+- **`MODIFIER_URL.md`** : Guide pour modifier l'URL et le port
+- **`DEMARRER_APPLICATION.md`** : Guide pour démarrer l'application
+- **`ACCES_APPLICATION.md`** : Guide d'accès à l'application
+
+---
+
+## 📚 Commandes Utiles
+
+### Gestion Git
+```bash
+# Voir l'état
+git status
+
+# Résoudre les conflits
+git stash
+git pull origin main
+
+# Mettre à jour avec le script
+./scripts/fix-git-and-update.sh
+```
+
+### Gestion PM2
+```bash
+# Voir le statut
+pm2 status
+
+# Voir les logs
+pm2 logs influencecore
+
+# Redémarrer avec variables d'environnement
+pm2 restart influencecore --update-env
+
+# Démarrer l'application
+./scripts/start-app.sh
+```
+
+### Configuration
+```bash
+# Modifier URL et port
+./scripts/update-url-port.sh "http://123.45.67.89" 3000
+
+# Vérifier l'accessibilité
+./scripts/check-accessibility.sh
+
+# Tout corriger automatiquement
+./scripts/fix-all.sh
+```
+
+### Vérification
+```bash
+# Vérifier le port
+netstat -tlnp | grep 3000
+# Ou
+ss -tlnp | grep 3000
+
+# Tester localement
+curl http://localhost:3000
+
+# Vérifier le firewall
+sudo ufw status
+```
 
 ---
 

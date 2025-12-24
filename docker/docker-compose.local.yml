@@ -11,7 +11,7 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     ports:
-      - "3306:3306"
+      - "${MARIADB_PORT:-3306}:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./mariadb/init:/docker-entrypoint-initdb.d:ro
@@ -42,10 +42,52 @@ services:
       mariadb:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "${KEYCLOAK_PORT:-8080}:8080"
     volumes:
       - ./keycloak/realm:/opt/keycloak/data/import:ro
       - ./keycloak/themes:/opt/keycloak/themes:ro
+
+  redis:
+    image: redis:alpine
+    container_name: influencecore-redis-local
+    restart: always
+
+  helpdesk:
+    image: frappe/bench:latest
+    container_name: influencecore-helpdesk-local
+    restart: always
+    command: bash /workspace/init.sh
+    environment:
+      - SHELL=/bin/bash
+      - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      - DB_HOST=mariadb
+      - REDIS_CACHE=redis://redis:6379
+      - REDIS_QUEUE=redis://redis:6379
+      - REDIS_SOCKETIO=redis://redis:6379
+    working_dir: /home/frappe
+    volumes:
+      - ../helpdesk-develop:/workspace
+    ports:
+      - "${HELPDESK_PORT:-8000}:8000"
+      - "${HELPDESK_SOCKETIO_PORT:-9000}:9000"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  fossbilling:
+    image: php:8.2-apache
+    container_name: influencecore-fossbilling-local
+    restart: always
+    command: bash -lc "a2enmod rewrite >/dev/null 2>&1 || true; apache2-foreground"
+    volumes:
+      - ../FOSSBilling:/var/www/html
+    ports:
+      - "${FOSSBILLING_PORT:-8081}:80"
+    depends_on:
+      mariadb:
+        condition: service_healthy
 
   influencecore:
     build:
@@ -67,11 +109,12 @@ services:
       INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD}
       INITIAL_ADMIN_NAME: ${INITIAL_ADMIN_NAME}
       INITIAL_ADMIN_PSEUDO: ${INITIAL_ADMIN_PSEUDO}
+      INITIAL_ADMIN_SELF_DELETE: "true"
       NEXT_PUBLIC_HELPDESK_DASHBOARD_URL: ${NEXT_PUBLIC_HELPDESK_DASHBOARD_URL}
       NEXT_PUBLIC_FOSSBILLING_DASHBOARD_URL: ${NEXT_PUBLIC_FOSSBILLING_DASHBOARD_URL}
       NEXT_PUBLIC_KEYCLOAK_ADMIN_URL: ${NEXT_PUBLIC_KEYCLOAK_ADMIN_URL}
     ports:
-      - "3000:3000"
+      - "${INFLUENCECORE_PORT:-3000}:3000"
 
 volumes:
   mariadb_data:

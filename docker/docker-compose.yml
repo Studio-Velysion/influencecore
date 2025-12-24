@@ -11,7 +11,7 @@ services:
     environment:
       MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
     ports:
-      - "3306:3306"
+      - "${MARIADB_PORT:-3306}:3306"
     volumes:
       - mariadb_data:/var/lib/mysql
       - ./mariadb/init:/docker-entrypoint-initdb.d:ro
@@ -44,7 +44,7 @@ services:
       mariadb:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "${KEYCLOAK_PORT:-8080}:8080"
     networks:
       - influencecore-network
     volumes:
@@ -75,12 +75,13 @@ services:
       INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD}
       INITIAL_ADMIN_NAME: ${INITIAL_ADMIN_NAME}
       INITIAL_ADMIN_PSEUDO: ${INITIAL_ADMIN_PSEUDO}
+      INITIAL_ADMIN_SELF_DELETE: "true"
       # Integrations (URLs)
       NEXT_PUBLIC_HELPDESK_DASHBOARD_URL: ${NEXT_PUBLIC_HELPDESK_DASHBOARD_URL}
       NEXT_PUBLIC_FOSSBILLING_DASHBOARD_URL: ${NEXT_PUBLIC_FOSSBILLING_DASHBOARD_URL}
       NEXT_PUBLIC_KEYCLOAK_ADMIN_URL: ${NEXT_PUBLIC_KEYCLOAK_ADMIN_URL}
     ports:
-      - "3000:3000"
+      - "${INFLUENCECORE_PORT:-3000}:3000"
     networks:
       - influencecore-network
 

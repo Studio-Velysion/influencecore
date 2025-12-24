@@ -16,6 +16,7 @@
 
 const bcrypt = require('bcryptjs')
 const { PrismaClient } = require('@prisma/client')
+const fs = require('fs')
 
 const prisma = new PrismaClient()
 
@@ -77,6 +78,16 @@ async function main() {
   })
 
   console.log(`[init-admin] Admin créé/mis à jour: ${maskEmail(user.email)} (id=${user.id})`)
+
+  // Auto-suppression (uniquement si explicitement demandé, ex: en container)
+  if (process.env.INITIAL_ADMIN_SELF_DELETE === 'true') {
+    try {
+      fs.unlinkSync(__filename)
+      console.log('[init-admin] Script supprimé (INITIAL_ADMIN_SELF_DELETE=true).')
+    } catch (e) {
+      console.warn('[init-admin] Impossible de supprimer le script:', e?.message || e)
+    }
+  }
 }
 
 main()

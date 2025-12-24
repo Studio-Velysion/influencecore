@@ -1,110 +1,110 @@
-# 🎬 InfluenceCore
+# 🎬 InfluenceCore 24/12/2025
 
-**Plateforme SaaS tout-en-un pour créateurs de contenu**
+**Plateforme SaaS tout-en-un pour créateurs de contenu** (CreatorHub).
 
-Organisez vos idées, scripts et workflow vidéo en un seul endroit. Conçu pour YouTubeurs, Streamers, Vidéastes et Influenceurs.
+Organisez vos idées, scripts et workflow vidéo en un seul endroit.
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue)
+![MariaDB](https://img.shields.io/badge/MariaDB-10.11-blue)
 
 ---
 
 ## ✨ Fonctionnalités
 
-### ✅ Modules V1 (Complets)
+### ✅ Modules principaux
 
-- 🔐 **Authentification** - Register, Login, Logout sécurisés
-- 📊 **Dashboard** - Vue d'ensemble du workflow créateur
-- 💡 **Idées Vidéos** - Vue Kanban, gestion complète des idées
-- 📝 **Scripts** - Éditeur structuré avec sections modulaires
-- 📅 **Calendrier éditorial** - Planification visuelle mensuelle
-- 📌 **Notes rapides** - Capture instantanée avec tags
+- **Dashboard**: vue d’ensemble du workflow créateur
+- **Idées**: gestion + workflow (Kanban)
+- **Scripts**: éditeur structuré
+- **Calendrier**: planification éditoriale
+- **Notes**: notes rapides
 
-### 🚀 Modules V2 (À venir)
+### 🔐 Auth & rôles
 
-- 🎨 Moodboards (board visuel type Milanote)
-- 🤝 Sponsors (CRM influence + contrats)
-- 👥 Collaborations (projets avec d'autres créateurs)
-- 📈 Analytics (intégration API YouTube/Twitch)
+- **SSO Keycloak** via NextAuth (OIDC)
+- **Admin Console Keycloak** accessible depuis InfluenceCore (iframe / intégration)
+
+### 🔌 Intégrations (unifiées dans InfluenceCore)
+
+- **Messa (Postiz)**: fonctionnalités Postiz intégrées dans l’UI InfluenceCore (sans UI Postiz)
+- **Helpdesk**: création de tickets depuis InfluenceCore + accès dashboard Helpdesk
+- **Abonnements (FOSSBilling)**: affichage dans InfluenceCore + accès dashboard FOSSBilling
 
 ---
 
 ## 🚀 Stack Technique
 
-- **Frontend**: Next.js 14 + React 18 + TypeScript + TailwindCSS
-- **Backend**: Next.js API Routes
-- **Database**: PostgreSQL + Prisma ORM
-- **Auth**: NextAuth.js (Email/Password)
-- **Deployment**: Vercel / Railway / VPS
+- **App**: Next.js 14 (App Router) + React + TypeScript
+- **UI**: Chakra UI v3 (+ styles Velysion)
+- **DB**: MariaDB (MySQL) + Prisma
+- **Auth**: NextAuth.js + Keycloak (OIDC)
+- **Containers**: Docker / Docker Compose
+- **Déploiement**: CapRover (recommandé pour le multi-conteneurs)
 
 ---
 
-## 📦 Installation rapide
+## 📦 Installation (recommandé) — Docker (stack complète)
 
-### Installation en 3 étapes
+1. **Créer `docker/.env`**
 
-1. **Installer les dépendances**
-   ```bash
-   npm install
-   ```
+```bash
+copy docker\\env.example docker\\.env
+```
 
-2. **Configurer Supabase et installer la base de données**
-   ```bash
-   npm run db:setup
-   ```
-   > Cette commande vous guidera pour configurer Supabase et créer automatiquement toutes les tables.
+1. **Renseigner tes variables** dans `docker/.env` (mots de passe MariaDB, secrets NextAuth, Keycloak client, etc.)
 
-3. **Lancer l'application**
-   ```bash
-   npm run dev
-   ```
+1. **Démarrer la stack locale**
 
-Ouvrez [http://localhost:3000](http://localhost:3000) 🎉
+```bash
+docker compose -f docker/docker-compose.local.yml up -d
+```
 
-📖 **Guide complet** : Voir [`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md)
+1. **Accès**
+
+- InfluenceCore: `http://localhost:3000`
+- Keycloak: `http://localhost:8080`
+- Helpdesk: `http://localhost:8000`
+- FOSSBilling: `http://localhost:8081`
+
+📖 Voir aussi: `docker/README.md`
 
 ---
 
 ## 🗄️ Base de données
 
-Ce projet utilise **Supabase** (PostgreSQL dans le cloud) - Gratuit jusqu'à 500MB.
+Le projet utilise **MariaDB** avec Prisma.
 
-📖 **Guide complet** : Voir [`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md)
-
-### Modèles de données
-
-- **User** - Utilisateurs et authentification
-- **VideoIdea** - Idées de vidéos avec workflow
-- **VideoScript** - Scripts structurés avec checklists
-- **QuickNote** - Notes rapides avec tags
+Les services (InfluenceCore, Keycloak, Helpdesk, FOSSBilling) peuvent partager la **même instance MariaDB** (bases séparées).
 
 ---
 
 ## 🛠️ Commandes disponibles
 
 ```bash
-# Développement
+# Développement (sans Docker)
 npm run dev          # Serveur de développement
 npm run build        # Build de production
 npm run start        # Serveur de production
 npm run lint         # Linter ESLint
 
-# Base de données
-npm run db:setup     # Installation automatique (Supabase + tables + utilisateurs test)
+# Prisma / DB
 npm run db:generate  # Générer le client Prisma
 npm run db:push      # Appliquer le schéma (dev)
 npm run db:migrate   # Créer une migration
 npm run db:studio    # Interface graphique Prisma
-npm run test:create-users  # Créer les utilisateurs de test
+
+# Docker
+docker compose -f docker/docker-compose.local.yml up -d
+docker compose -f docker/docker-compose.local.yml down
 ```
 
 ---
 
 ## 📁 Structure du projet
 
-```
+```text
 influencecore/
 ├── 📚 documentation/      # Toute la documentation
 ├── 🐳 docker/            # Configuration Docker
@@ -150,9 +150,11 @@ influencecore/
 
 ## 📚 Documentation
 
-- 📖 **[`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md)** - **Guide unique et complet** (Installation, Configuration, Déploiement, Dépannage)
+- 📖 **[`documentation/INDEX_DOCUMENTATION.md`](documentation/INDEX_DOCUMENTATION.md)** - Index de la documentation
+- 🚀 **[`documentation/CAPROVER_DEPLOY.md`](documentation/CAPROVER_DEPLOY.md)** - Déploiement CapRover
+- 🔌 **[`documentation/INTEGRATIONS_HELPDESK_FOSSBILLING.md`](documentation/INTEGRATIONS_HELPDESK_FOSSBILLING.md)** - Intégrations Helpdesk + FOSSBilling
 - 🔌 **[`documentation/DOCUMENTATION_API.md`](documentation/DOCUMENTATION_API.md)** - **Documentation complète de toutes les API**
-- 📁 **[`documentation/README.md`](documentation/README.md)** - **Index de toute la documentation**
+- 🐳 **[`docker/README.md`](docker/README.md)** - Stack Docker
 
 ---
 
@@ -169,34 +171,36 @@ influencecore/
 
 ## 🧪 Test de l'application
 
-1. **Créer un compte** : `/register`
-2. **Créer une idée** : `/ideas` → "+ Nouvelle idée"
-3. **Créer un script** : `/scripts` → "+ Nouveau script"
-4. **Voir le calendrier** : `/calendar`
-5. **Créer des notes** : Dashboard widget ou `/notes`
+1. **Démarrer la stack** (Docker recommandé)
+2. **Se connecter** via le bouton **Keycloak** (SSO)
+3. **Créer une idée**: `/ideas`
+4. **Créer un script**: `/scripts`
+5. **Voir le calendrier**: `/calendar`
+6. **Créer des notes**: `/notes`
 
 ---
 
 ## 🐛 Dépannage
 
 ### Erreur : "Can't reach database server"
-- Vérifiez que votre fichier `.env.local` existe
-- Vérifiez que `DATABASE_URL` est correcte
-- Vérifiez que votre projet Supabase est actif
-- Consultez [`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md) pour la configuration Supabase
+
+- Vérifie que MariaDB tourne (Docker) et que `DATABASE_URL` est correcte
+- Voir `docker/README.md`
 
 ### Erreur Prisma
+
 ```bash
 npm run db:generate
 npm run db:push
 ```
 
 ### Port 3000 utilisé
+
 ```bash
 npm run dev -- -p 3001
 ```
 
-📖 **Plus d'aide** : Voir la section Dépannage dans [`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md)
+📖 Plus d’aide: `documentation/COMMANDES_DIAGNOSTIC.md`
 
 ---
 
@@ -230,5 +234,4 @@ Pour toute question ou problème, consultez la documentation dans le dossier du 
 
 ---
 
-**Fait avec ❤️ pour les créateurs de contenu**
-
+Fait avec ❤️ pour les créateurs de contenu

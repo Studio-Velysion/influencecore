@@ -1,16 +1,25 @@
 // Système de permissions et vérification
 
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
-import { prisma } from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/auth'
 
 // Liste de toutes les permissions disponibles
 export const PERMISSIONS = {
   // Administration
   ADMIN_ACCESS: 'admin.access',
   ADMIN_USERS: 'admin.users',
-  ADMIN_ROLES: 'admin.roles',
+  ADMIN_CMS: 'admin.cms',
+  ADMIN_LOGS: 'admin.logs',
   
+  // Intégrations
+  HELPDESK_ACCESS: 'helpdesk.access',
+  HELPDESK_TICKETS_CREATE: 'helpdesk.tickets.create',
+  HELPDESK_TICKETS_VIEW: 'helpdesk.tickets.view',
+  HELPDESK_ADMIN: 'helpdesk.admin',
+
+  FOSSBILLING_ACCESS: 'fossbilling.access',
+  FOSSBILLING_SUBSCRIPTIONS_VIEW: 'fossbilling.subscriptions.view',
+  FOSSBILLING_ADMIN: 'fossbilling.admin',
+
   // Idées
   IDEAS_VIEW: 'ideas.view',
   IDEAS_CREATE: 'ideas.create',
@@ -32,6 +41,15 @@ export const PERMISSIONS = {
   NOTES_CREATE: 'notes.create',
   NOTES_EDIT: 'notes.edit',
   NOTES_DELETE: 'notes.delete',
+
+  // Messa (remplace Fusion)
+  MESSA_ACCESS: 'messa.access',
+  MESSA_WORKSPACES_VIEW: 'messa.workspaces.view',
+  MESSA_TEMPLATES_VIEW: 'messa.templates.view',
+  MESSA_POST_VERSIONS_VIEW: 'messa.post_versions.view',
+  MESSA_QUEUES_VIEW: 'messa.queues.view',
+  MESSA_HASHTAG_GROUPS_VIEW: 'messa.hashtag_groups.view',
+  MESSA_DYNAMIC_VARIABLES_VIEW: 'messa.dynamic_variables.view',
 } as const
 
 export type PermissionKey = typeof PERMISSIONS[keyof typeof PERMISSIONS]
@@ -39,10 +57,12 @@ export type PermissionKey = typeof PERMISSIONS[keyof typeof PERMISSIONS]
 // Catégories de permissions
 export const PERMISSION_CATEGORIES = {
   admin: 'Administration',
+  integrations: 'Intégrations',
   ideas: 'Idées Vidéos',
   scripts: 'Scripts',
   calendar: 'Calendrier',
   notes: 'Notes',
+  messa: 'Messa',
 } as const
 
 // Permissions par catégorie
@@ -50,7 +70,15 @@ export const PERMISSIONS_BY_CATEGORY = {
   admin: [
     { key: PERMISSIONS.ADMIN_ACCESS, name: 'Accès administration', description: 'Accéder à l\'interface d\'administration' },
     { key: PERMISSIONS.ADMIN_USERS, name: 'Gérer les utilisateurs', description: 'Créer, modifier et supprimer des utilisateurs' },
-    { key: PERMISSIONS.ADMIN_ROLES, name: 'Gérer les rôles', description: 'Créer, modifier et supprimer des rôles' },
+  ],
+  integrations: [
+    { key: PERMISSIONS.HELPDESK_ACCESS, name: 'Accès Helpdesk', description: 'Accéder au système de tickets' },
+    { key: PERMISSIONS.HELPDESK_TICKETS_CREATE, name: 'Créer des tickets', description: 'Créer des tickets Helpdesk depuis InfluenceCore' },
+    { key: PERMISSIONS.HELPDESK_TICKETS_VIEW, name: 'Voir les tickets', description: 'Voir les tickets Helpdesk (liste/état)' },
+    { key: PERMISSIONS.HELPDESK_ADMIN, name: 'Admin Helpdesk', description: 'Accéder au tableau de bord Helpdesk (agents/admin)' },
+    { key: PERMISSIONS.FOSSBILLING_ACCESS, name: 'Accès FOSSBilling', description: 'Accéder au système de billing' },
+    { key: PERMISSIONS.FOSSBILLING_SUBSCRIPTIONS_VIEW, name: 'Voir les abonnements', description: 'Voir les abonnements synchronisés depuis FOSSBilling' },
+    { key: PERMISSIONS.FOSSBILLING_ADMIN, name: 'Admin FOSSBilling', description: 'Accéder au tableau de bord FOSSBilling (staff/admin)' },
   ],
   ideas: [
     { key: PERMISSIONS.IDEAS_VIEW, name: 'Voir les idées', description: 'Consulter les idées de vidéos' },
@@ -74,96 +102,57 @@ export const PERMISSIONS_BY_CATEGORY = {
     { key: PERMISSIONS.NOTES_EDIT, name: 'Modifier les notes', description: 'Modifier les notes existantes' },
     { key: PERMISSIONS.NOTES_DELETE, name: 'Supprimer les notes', description: 'Supprimer des notes' },
   ],
+  messa: [
+    { key: PERMISSIONS.MESSA_ACCESS, name: 'Accès Messa', description: 'Accéder à Messa' },
+    { key: PERMISSIONS.MESSA_WORKSPACES_VIEW, name: 'Voir les workspaces', description: 'Consulter les espaces de travail' },
+    { key: PERMISSIONS.MESSA_TEMPLATES_VIEW, name: 'Voir les templates', description: 'Consulter les modèles' },
+    { key: PERMISSIONS.MESSA_POST_VERSIONS_VIEW, name: 'Voir les versions', description: 'Consulter les versions de contenu' },
+    { key: PERMISSIONS.MESSA_QUEUES_VIEW, name: 'Voir les queues', description: 'Consulter les files de publication' },
+    { key: PERMISSIONS.MESSA_HASHTAG_GROUPS_VIEW, name: 'Voir les groupes de hashtags', description: 'Consulter les groupes de hashtags' },
+    { key: PERMISSIONS.MESSA_DYNAMIC_VARIABLES_VIEW, name: 'Voir les variables dynamiques', description: 'Consulter les variables dynamiques' },
+  ],
 }
 
-// Vérifier si un utilisateur a une permission
-export async function hasPermission(
-  userId: string,
-  permission: PermissionKey
-): Promise<boolean> {
-  // Vérifier si l'utilisateur est admin
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { isAdmin: true },
-  })
+/**
+ * Ancien système "Rôles & Permissions" supprimé.
+ * En attendant Keycloak (ou ton nouveau système), on garde une API simple:
+ * - Les admins (user.isAdmin) ont tout
+ * - Les users authentifiés ont toutes les permissions non-admin
+ */
 
-  if (user?.isAdmin) {
-    return true // Les admins ont toutes les permissions
-  }
+const ADMIN_ONLY: PermissionKey[] = [
+  PERMISSIONS.ADMIN_ACCESS,
+  PERMISSIONS.ADMIN_USERS,
+  PERMISSIONS.ADMIN_CMS,
+  PERMISSIONS.ADMIN_LOGS,
+]
 
-  // Vérifier les permissions via les rôles
-  const userRoles = await prisma.userRole.findMany({
-    where: { userId },
-    include: {
-      role: {
-        include: {
-          permissions: {
-            include: {
-              permission: true,
-            },
-          },
-        },
-      },
-    },
-  })
-
-  for (const userRole of userRoles) {
-    for (const rolePermission of userRole.role.permissions) {
-      if (rolePermission.permission.key === permission) {
-        return true
-      }
-    }
-  }
-
-  return false
+function getNonAdminPermissions(): string[] {
+  return Object.values(PERMISSIONS).filter((p) => !ADMIN_ONLY.includes(p as PermissionKey))
 }
 
-// Vérifier si l'utilisateur actuel a une permission
-export async function checkPermission(
-  permission: PermissionKey
-): Promise<boolean> {
-  const session = await getServerSession(authOptions)
-  if (!session?.user?.id) {
-    return false
-  }
+export async function checkPermission(permission: PermissionKey): Promise<boolean> {
+  const user = await getCurrentUser()
+  if (!user) return false
+  const roles = (user as any)?.roles as string[] | undefined
+  const isAdmin =
+    !!user.isAdmin ||
+    (Array.isArray(roles) && (roles.includes('influencecore-admin') || roles.includes('admin')))
+  if (isAdmin) return true
 
-  return hasPermission(session.user.id, permission)
+  // Permissions admin réservées aux admins
+  if (ADMIN_ONLY.includes(permission)) return false
+
+  // Toutes les autres permissions sont autorisées pour un utilisateur connecté
+  return true
 }
 
-// Obtenir toutes les permissions d'un utilisateur
 export async function getUserPermissions(userId: string): Promise<string[]> {
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { isAdmin: true },
-  })
+  // userId non utilisé: l'ancien moteur était DB-driven. On garde la signature pour compat.
+  const user = await getCurrentUser()
+  if (!user) return []
+  if (user.isAdmin) return Object.values(PERMISSIONS)
 
-  if (user?.isAdmin) {
-    // Les admins ont toutes les permissions
-    return Object.values(PERMISSIONS)
-  }
-
-  const userRoles = await prisma.userRole.findMany({
-    where: { userId },
-    include: {
-      role: {
-        include: {
-          permissions: {
-            include: {
-              permission: true,
-            },
-          },
-        },
-      },
-    },
-  })
-
-  const permissions = new Set<string>()
-  for (const userRole of userRoles) {
-    for (const rolePermission of userRole.role.permissions) {
-      permissions.add(rolePermission.permission.key)
-    }
-  }
-
-  return Array.from(permissions)
+  return getNonAdminPermissions()
 }
 

@@ -1,0 +1,10 @@
+name: vision-ui-dashboard-chakra
+region: us-east-1
+yamlVersion: 2
+frontend:
+    path: .
+    publish: build
+    scripts:
+        deploy:
+            - npm install --legacy-peer-deps
+            - npm run build

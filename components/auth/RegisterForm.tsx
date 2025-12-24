@@ -73,13 +73,13 @@ export default function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="bg-state-error/20 border border-state-error/30 text-state-error px-4 py-3 rounded-lg">
           {error}
         </div>
       )}
 
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">
           Email *
         </label>
         <input
@@ -89,13 +89,13 @@ export default function RegisterForm() {
           value={formData.email}
           onChange={handleChange}
           required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="input-velysion w-full"
           placeholder="votre@email.com"
         />
       </div>
 
       <div>
-        <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="name" className="block text-sm font-medium text-text-secondary mb-2">
           Nom (optionnel)
         </label>
         <input
@@ -104,13 +104,13 @@ export default function RegisterForm() {
           type="text"
           value={formData.name}
           onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="input-velysion w-full"
           placeholder="Votre nom"
         />
       </div>
 
       <div>
-        <label htmlFor="pseudo" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="pseudo" className="block text-sm font-medium text-text-secondary mb-2">
           Pseudo (optionnel)
         </label>
         <input
@@ -119,13 +119,13 @@ export default function RegisterForm() {
           type="text"
           value={formData.pseudo}
           onChange={handleChange}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="input-velysion w-full"
           placeholder="Votre pseudo"
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">
           Mot de passe *
         </label>
         <input
@@ -136,14 +136,14 @@ export default function RegisterForm() {
           onChange={handleChange}
           required
           minLength={6}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="input-velysion w-full"
           placeholder="••••••••"
         />
-        <p className="mt-1 text-xs text-gray-500">Minimum 6 caractères</p>
+        <p className="mt-1 text-xs text-text-muted">Minimum 6 caractères</p>
       </div>
 
       <div>
-        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-secondary mb-2">
           Confirmer le mot de passe *
         </label>
         <input
@@ -154,7 +154,7 @@ export default function RegisterForm() {
           onChange={handleChange}
           required
           minLength={6}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="input-velysion w-full"
           placeholder="••••••••"
         />
       </div>
@@ -162,14 +162,14 @@ export default function RegisterForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="btn-velysion-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? 'Création...' : 'Créer mon compte'}
       </button>
 
-      <p className="text-center text-sm text-gray-600">
+      <p className="text-center text-sm text-text-tertiary">
         Déjà un compte ?{' '}
-        <Link href="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+        <Link href="/login" className="link-velysion font-medium">
           Se connecter
         </Link>
       </p>

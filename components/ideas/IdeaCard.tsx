@@ -10,18 +10,18 @@ interface IdeaCardProps {
 }
 
 const statusColors: Record<string, string> = {
-  'Idée': 'bg-gray-100 text-gray-800',
-  'Écriture': 'bg-blue-100 text-blue-800',
-  'Tournage': 'bg-yellow-100 text-yellow-800',
-  'Montage': 'bg-purple-100 text-purple-800',
-  'Programmée': 'bg-orange-100 text-orange-800',
-  'Publiée': 'bg-green-100 text-green-800',
+  'Idée': 'bg-bg-tertiary text-text-secondary border border-border-dark',
+  'Écriture': 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+  'Tournage': 'bg-gold-500/20 text-gold-400 border border-gold-500/30',
+  'Montage': 'bg-purple-600/20 text-purple-300 border border-purple-600/30',
+  'Programmée': 'bg-purple-400/20 text-purple-300 border border-purple-400/30',
+  'Publiée': 'bg-state-success/20 text-state-success border border-state-success/30',
 }
 
 const priorityColors: Record<string, string> = {
-  'Haute': 'text-red-600 font-semibold',
-  'Moyenne': 'text-yellow-600',
-  'Basse': 'text-gray-600',
+  'Haute': 'text-state-error font-semibold',
+  'Moyenne': 'text-gold-400',
+  'Basse': 'text-text-tertiary',
 }
 
 export default function IdeaCard({ idea }: IdeaCardProps) {
@@ -30,9 +30,9 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
 
   return (
     <Link href={`/ideas/${idea.id}`}>
-      <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-all cursor-pointer group">
+      <div className="card-velysion p-4 hover:glow-purple transition-all cursor-pointer group">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="font-semibold text-gray-900 line-clamp-2 flex-1 group-hover:text-primary-600 transition-colors">
+          <h3 className="font-semibold text-text-primary line-clamp-2 flex-1 group-hover:text-purple-400 transition-velysion">
             {idea.title}
           </h3>
           <span className={cn('ml-2 px-2 py-1 rounded text-xs font-medium whitespace-nowrap', statusColor)}>
@@ -41,19 +41,19 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
         </div>
 
         {idea.concept && (
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+          <p className="text-sm text-text-tertiary mb-3 line-clamp-2">
             {idea.concept}
           </p>
         )}
 
-        <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-2">
+        <div className="flex flex-wrap gap-2 text-xs text-text-muted mb-2">
           {idea.platform && (
-            <span className="bg-gray-50 px-2 py-1 rounded border border-gray-200">
+            <span className="bg-bg-tertiary px-2 py-1 rounded border border-border-dark">
               {idea.platform}
             </span>
           )}
           {idea.format && (
-            <span className="bg-gray-50 px-2 py-1 rounded border border-gray-200">
+            <span className="bg-bg-tertiary px-2 py-1 rounded border border-border-dark">
               {idea.format}
             </span>
           )}
@@ -64,7 +64,7 @@ export default function IdeaCard({ idea }: IdeaCardProps) {
           )}
         </div>
 
-        <div className="flex items-center justify-between text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">
+        <div className="flex items-center justify-between text-xs text-text-muted mt-3 pt-3 border-t border-border-dark">
           {idea.targetDate && (
             <div className="flex items-center">
               <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">

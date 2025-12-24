@@ -2,25 +2,65 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="text-center">
-        <h1 className="text-9xl font-bold text-primary-600">404</h1>
-        <h2 className="text-3xl font-semibold text-gray-900 mt-4">
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#0A0A0F',
+      color: '#FFFFFF',
+      padding: '2rem',
+      fontFamily: 'system-ui, sans-serif'
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <h1 style={{
+          fontSize: '6rem',
+          fontWeight: 'bold',
+          background: 'linear-gradient(135deg, #9333EA 0%, #EC4899 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          marginBottom: '1rem'
+        }}>
+          404
+        </h1>
+        <h2 style={{
+          fontSize: '2rem',
+          fontWeight: '600',
+          marginBottom: '1rem'
+        }}>
           Page non trouvée
         </h2>
-        <p className="text-gray-600 mt-2 mb-8">
+        <p style={{ color: '#9CA3AF', marginBottom: '2rem' }}>
           La page que vous recherchez n'existe pas ou a été déplacée.
         </p>
-        <div className="flex gap-4 justify-center">
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link
             href="/dashboard"
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+            style={{
+              backgroundColor: '#F59E0B',
+              color: '#0A0A0F',
+              fontWeight: '600',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '0.5rem',
+              textDecoration: 'none',
+              display: 'inline-block'
+            }}
           >
             Retour au Dashboard
           </Link>
           <Link
             href="/"
-            className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+            style={{
+              backgroundColor: 'transparent',
+              color: '#FFFFFF',
+              fontWeight: '600',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '0.5rem',
+              border: '2px solid #9333EA',
+              textDecoration: 'none',
+              display: 'inline-block'
+            }}
           >
             Page d'accueil
           </Link>

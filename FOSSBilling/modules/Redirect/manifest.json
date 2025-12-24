@@ -1,0 +1,10 @@
+{
+  "id": "redirect",
+  "type": "mod",
+  "name": "Redirect",
+  "description": "Manage redirects",
+  "icon_url": "icon.svg",
+  "author": "FOSSBilling",
+  "author_url": "https://www.fossbilling.org",
+  "version": "1.0.0"
+}

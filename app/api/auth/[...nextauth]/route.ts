@@ -1,10 +1,23 @@
 import NextAuth, { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
+import KeycloakProvider from 'next-auth/providers/keycloak'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // Keycloak (SSO + rôles)
+    ...(process.env.KEYCLOAK_ISSUER &&
+    process.env.KEYCLOAK_CLIENT_ID &&
+    process.env.KEYCLOAK_CLIENT_SECRET
+      ? [
+          KeycloakProvider({
+            clientId: process.env.KEYCLOAK_CLIENT_ID,
+            clientSecret: process.env.KEYCLOAK_CLIENT_SECRET,
+            issuer: process.env.KEYCLOAK_ISSUER,
+          }),
+        ]
+      : []),
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
@@ -53,13 +66,26 @@ export const authOptions: NextAuthOptions = {
     strategy: 'jwt',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) {
+      // Keycloak: extraire les rôles (realm roles)
+      if (account?.provider === 'keycloak') {
+        const roles =
+          (profile as any)?.realm_access?.roles ||
+          (profile as any)?.resource_access?.[process.env.KEYCLOAK_CLIENT_ID || '']?.roles ||
+          []
+        token.roles = Array.isArray(roles) ? roles.map(String) : []
+        token.isAdmin =
+          token.roles.includes('influencecore-admin') ||
+          token.roles.includes('admin')
+      }
+
       if (user) {
         token.id = user.id
         token.email = user.email
         token.name = user.name
         token.pseudo = user.pseudo
         token.isAdmin = user.isAdmin
+        token.roles = (user as any).roles || token.roles
       }
       return token
     },
@@ -70,6 +96,7 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name as string
         session.user.pseudo = token.pseudo as string
         session.user.isAdmin = token.isAdmin as boolean
+        session.user.roles = (token.roles as string[]) || []
       }
       return session
     },

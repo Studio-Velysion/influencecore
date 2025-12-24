@@ -1,44 +1,64 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
 
-# dependencies
-/node_modules
-/.pnp
+# Dependencies
+node_modules/
+.pnp
 .pnp.js
 
-# testing
-/coverage
+# Testing
+coverage/
+.nyc_output
 
-# next.js
-/.next/
-/out/
+# Next.js
+.next/
+out/
+build
+dist
 
-# production
-/build
+# Production
+*.local
 
-# misc
+# Misc
 .DS_Store
 *.pem
 
-# debug
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
+# Local env files
 .env*.local
 .env
-.env
+docker/.env
+docker/.env.*
 
-# vercel
+# Vercel
 .vercel
 
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
 
-# prisma
-/prisma/migrations
+# Prisma
+prisma/*.db
+prisma/*.db-journal
 
-# scripts avec tokens (ne pas commiter)
-scripts/push-to-github.ps1
+# Keycloak sources (Windows path-length issue)
+# Sur Windows, certains fichiers de tests Keycloak dépassent la limite de chemin lors du staging Git.
+# On ignore la testsuite pour permettre le push du monorepo.
+keycloak-main/testsuite/
 
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~

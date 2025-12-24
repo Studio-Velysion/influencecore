@@ -10,6 +10,8 @@ export default function Navbar() {
   const pathname = usePathname()
   const { data: session } = useSession()
 
+  // En mode dev (BYPASS_AUTH), NextAuth retourne déjà une session de test
+  // Donc on peut toujours afficher la navbar
   if (!session) {
     return null
   }
@@ -26,24 +28,24 @@ export default function Navbar() {
   const isAdmin = session?.user?.isAdmin || false
 
   return (
-    <nav className="bg-white shadow-sm border-b">
+    <nav className="bg-bg-secondary/80 backdrop-blur-md border-b border-border-dark sticky top-0 z-50 glass-effect">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           <div className="flex items-center space-x-8">
-            <Link href="/dashboard" className="text-xl font-bold text-gray-900">
+            <Link href="/dashboard" className="text-xl font-bold bg-gradient-purple-pink bg-clip-text text-transparent">
               InfluenceCore
             </Link>
-            <nav className="hidden md:flex space-x-4">
+            <nav className="hidden md:flex space-x-2">
             {navItems.map((item) => {
               const isActive = pathname === item.href || pathname?.startsWith(item.href + '/')
               return (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-velysion ${
                     isActive
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-purple-400 bg-purple-500/20 border border-purple-500/30'
+                      : 'text-text-secondary hover:text-purple-400 hover:bg-bg-hover'
                   }`}
                 >
                   {item.label}
@@ -54,30 +56,20 @@ export default function Navbar() {
               <>
                 <Link
                   href="/admin"
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-velysion ${
                     pathname === '/admin' || pathname?.startsWith('/admin/')
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                      ? 'text-purple-400 bg-purple-500/20 border border-purple-500/30'
+                      : 'text-text-secondary hover:text-purple-400 hover:bg-bg-hover'
                   }`}
                 >
                   Administration
-                </Link>
-                <Link
-                  href="/admin/subscriptions"
-                  className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    pathname === '/admin/subscriptions'
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
-                >
-                  Abonnements
                 </Link>
               </>
             )}
             </nav>
           </div>
           <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-text-secondary">
               {session.user?.name || session.user?.pseudo || session.user?.email}
             </span>
             <LogoutButton />

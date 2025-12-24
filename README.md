@@ -43,60 +43,35 @@ Organisez vos idées, scripts et workflow vidéo en un seul endroit. Conçu pour
 
 ## 📦 Installation rapide
 
-### 1. Cloner et installer
+### Installation en 3 étapes
 
-```bash
-git clone <votre-repo>
-cd InfluenceCore
-npm install
-```
+1. **Installer les dépendances**
+   ```bash
+   npm install
+   ```
 
-### 2. Configurer la base de données
+2. **Configurer Supabase et installer la base de données**
+   ```bash
+   npm run db:setup
+   ```
+   > Cette commande vous guidera pour configurer Supabase et créer automatiquement toutes les tables.
 
-Copiez `.env.example` vers `.env` et configurez :
-
-```bash
-cp .env.example .env
-```
-
-Éditez `.env` avec vos identifiants PostgreSQL :
-
-```env
-DATABASE_URL="postgresql://user:password@host:5432/influencecore?schema=public"
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="votre-secret-32-caracteres"
-```
-
-### 3. Initialiser la base de données
-
-```bash
-# Générer le client Prisma
-npm run db:generate
-
-# Créer les tables
-npm run db:push
-```
-
-### 4. Lancer l'application
-
-```bash
-npm run dev
-```
+3. **Lancer l'application**
+   ```bash
+   npm run dev
+   ```
 
 Ouvrez [http://localhost:3000](http://localhost:3000) 🎉
+
+📖 **Guide complet** : Voir [`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md)
 
 ---
 
 ## 🗄️ Base de données
 
-### Options de serveur PostgreSQL
+Ce projet utilise **Supabase** (PostgreSQL dans le cloud) - Gratuit jusqu'à 500MB.
 
-1. **PostgreSQL Local** - Installation locale
-2. **Supabase** - Cloud gratuit (500MB) ⭐ Recommandé
-3. **Neon** - Cloud gratuit (3GB)
-4. **VPS** - Votre propre serveur
-
-📖 **Guide complet** : Voir `DATABASE_SETUP.md` et `VPS_SETUP.md`
+📖 **Guide complet** : Voir [`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md)
 
 ### Modèles de données
 
@@ -117,10 +92,12 @@ npm run start        # Serveur de production
 npm run lint         # Linter ESLint
 
 # Base de données
+npm run db:setup     # Installation automatique (Supabase + tables + utilisateurs test)
 npm run db:generate  # Générer le client Prisma
 npm run db:push      # Appliquer le schéma (dev)
 npm run db:migrate   # Créer une migration
 npm run db:studio    # Interface graphique Prisma
+npm run test:create-users  # Créer les utilisateurs de test
 ```
 
 ---
@@ -129,27 +106,32 @@ npm run db:studio    # Interface graphique Prisma
 
 ```
 influencecore/
-├── app/                    # Next.js App Router
-│   ├── api/               # API Routes
-│   ├── dashboard/         # Dashboard
-│   ├── ideas/            # Module Idées
-│   ├── scripts/          # Module Scripts
-│   ├── calendar/          # Calendrier
-│   └── notes/            # Notes rapides
-├── components/            # Composants React
-│   ├── auth/            # Authentification
-│   ├── ideas/            # Composants Idées
-│   ├── scripts/          # Composants Scripts
-│   ├── calendar/         # Composants Calendrier
-│   ├── notes/            # Composants Notes
-│   └── common/           # Composants communs
-├── lib/                   # Utilitaires
-│   ├── prisma.ts         # Client Prisma
-│   └── auth.ts           # Helpers auth
-├── prisma/
-│   └── schema.prisma     # Schéma DB
-├── types/                 # Types TypeScript
-└── public/               # Assets statiques
+├── 📚 documentation/      # Toute la documentation
+├── 🐳 docker/            # Configuration Docker
+├── app/                  # Next.js App Router
+│   ├── admin/           # Pages administration
+│   ├── api/             # Routes API
+│   ├── dashboard/       # Dashboard client
+│   ├── ideas/           # Module Idées
+│   ├── scripts/         # Module Scripts
+│   ├── calendar/        # Calendrier
+│   └── notes/           # Notes rapides
+├── components/          # Composants React
+│   ├── admin/          # Composants admin
+│   ├── client/         # Composants client
+│   ├── auth/           # Authentification
+│   ├── ideas/          # Composants Idées
+│   ├── scripts/        # Composants Scripts
+│   ├── calendar/       # Composants Calendrier
+│   ├── notes/          # Composants Notes
+│   └── common/         # Composants communs
+├── lib/                 # Utilitaires
+│   ├── prisma.ts       # Client Prisma
+│   └── auth.ts         # Helpers auth
+├── prisma/              # Configuration Prisma
+│   └── schema.prisma   # Schéma DB
+├── types/               # Types TypeScript
+└── scripts/             # Scripts utilitaires
 ```
 
 ---
@@ -162,33 +144,15 @@ influencecore/
 2. Configurez les variables d'environnement
 3. Déployez automatiquement
 
-📖 **Guide complet** : Voir `DEPLOYMENT.md`
-
-### Option 2 : Railway
-
-1. Créez un projet sur Railway
-2. Ajoutez PostgreSQL
-3. Déployez depuis Git
-
-### Option 3 : VPS avec Docker
-
-1. Utilisez `docker-compose.yml`
-2. Lancez `setup-vps.sh`
-3. Configurez Nginx
-
-📖 **Guide VPS** : Voir `VPS_SETUP.md`
+📖 **Guide complet** : Voir [`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md) - Section Déploiement
 
 ---
 
 ## 📚 Documentation
 
-- 📖 `INSTALLATION.md` - Guide d'installation détaillé
-- 🗄️ `DATABASE_SETUP.md` - Configuration base de données
-- 🖥️ `VPS_SETUP.md` - Configuration serveur VPS
-- 🚀 `DEPLOYMENT.md` - Guide de déploiement
-- 🔐 `AUTHENTICATION.md` - Détails authentification
-- 💡 `IDEAS_MODULE.md` - Module Idées Vidéos
-- ✅ `COMPLETE_MODULES.md` - Récapitulatif complet
+- 📖 **[`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md)** - **Guide unique et complet** (Installation, Configuration, Déploiement, Dépannage)
+- 🔌 **[`documentation/DOCUMENTATION_API.md`](documentation/DOCUMENTATION_API.md)** - **Documentation complète de toutes les API**
+- 📁 **[`documentation/README.md`](documentation/README.md)** - **Index de toute la documentation**
 
 ---
 
@@ -215,10 +179,11 @@ influencecore/
 
 ## 🐛 Dépannage
 
-### Erreur de connexion DB
-- Vérifiez `DATABASE_URL` dans `.env`
-- Vérifiez que PostgreSQL tourne
-- Testez la connexion : `psql -U user -d influencecore`
+### Erreur : "Can't reach database server"
+- Vérifiez que votre fichier `.env.local` existe
+- Vérifiez que `DATABASE_URL` est correcte
+- Vérifiez que votre projet Supabase est actif
+- Consultez [`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md) pour la configuration Supabase
 
 ### Erreur Prisma
 ```bash
@@ -230,6 +195,8 @@ npm run db:push
 ```bash
 npm run dev -- -p 3001
 ```
+
+📖 **Plus d'aide** : Voir la section Dépannage dans [`documentation/GUIDE_COMPLET.md`](documentation/GUIDE_COMPLET.md)
 
 ---
 

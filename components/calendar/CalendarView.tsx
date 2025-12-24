@@ -82,18 +82,18 @@ export default function CalendarView() {
   }
 
   const statusColors: Record<string, string> = {
-    'Idée': 'bg-gray-100 text-gray-800',
-    'Écriture': 'bg-blue-100 text-blue-800',
-    'Tournage': 'bg-yellow-100 text-yellow-800',
-    'Montage': 'bg-purple-100 text-purple-800',
-    'Programmée': 'bg-orange-100 text-orange-800',
-    'Publiée': 'bg-green-100 text-green-800',
+    'Idée': 'bg-bg-tertiary text-text-secondary border border-border-dark',
+    'Écriture': 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+    'Tournage': 'bg-gold-500/20 text-gold-400 border border-gold-500/30',
+    'Montage': 'bg-purple-600/20 text-purple-300 border border-purple-600/30',
+    'Programmée': 'bg-purple-400/20 text-purple-300 border border-purple-400/30',
+    'Publiée': 'bg-state-success/20 text-state-success border border-state-success/30',
   }
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-gray-600">Chargement...</div>
+        <div className="text-text-tertiary">Chargement...</div>
       </div>
     )
   }
@@ -101,36 +101,36 @@ export default function CalendarView() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Calendrier éditorial</h2>
+        <h2 className="text-3xl font-bold text-text-primary">Calendrier éditorial</h2>
         <div className="flex items-center gap-4">
           <button
             onClick={() => changeMonth(-1)}
-            className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 border border-border-dark rounded-lg hover:bg-bg-hover hover:border-purple-500/30 text-text-secondary transition-velysion"
           >
             ←
           </button>
-          <span className="text-lg font-semibold text-gray-900 min-w-[200px] text-center">
+          <span className="text-lg font-semibold text-text-primary min-w-[200px] text-center">
             {monthNames[month]} {year}
           </span>
           <button
             onClick={() => changeMonth(1)}
-            className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="px-4 py-2 border border-border-dark rounded-lg hover:bg-bg-hover hover:border-purple-500/30 text-text-secondary transition-velysion"
           >
             →
           </button>
           <button
             onClick={() => setCurrentDate(new Date())}
-            className="px-3 py-1 text-sm text-primary-600 hover:text-primary-700"
+            className="px-4 py-2 text-sm link-velysion font-medium"
           >
             Aujourd'hui
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="grid grid-cols-7 border-b">
+      <div className="card-velysion overflow-hidden p-0">
+        <div className="grid grid-cols-7 border-b border-border-dark">
           {dayNames.map((day) => (
-            <div key={day} className="p-3 text-center font-semibold text-gray-700 bg-gray-50">
+            <div key={day} className="p-3 text-center font-semibold text-text-secondary bg-bg-secondary">
               {day}
             </div>
           ))}
@@ -138,7 +138,7 @@ export default function CalendarView() {
         <div className="grid grid-cols-7">
           {days.map((day, index) => {
             if (day === null) {
-              return <div key={`empty-${index}`} className="min-h-[120px] border border-gray-200" />
+              return <div key={`empty-${index}`} className="min-h-[120px] border border-border-dark bg-bg-secondary/30" />
             }
 
             const dayIdeas = getIdeasForDate(day)
@@ -150,11 +150,11 @@ export default function CalendarView() {
             return (
               <div
                 key={day}
-                className={`min-h-[120px] border border-gray-200 p-2 ${
-                  isToday ? 'bg-primary-50' : ''
+                className={`min-h-[120px] border border-border-dark p-2 ${
+                  isToday ? 'bg-purple-500/10 border-purple-500/30' : 'bg-bg-tertiary/50'
                 }`}
               >
-                <div className={`text-sm font-medium mb-1 ${isToday ? 'text-primary-600' : 'text-gray-700'}`}>
+                <div className={`text-sm font-medium mb-1 ${isToday ? 'text-purple-400' : 'text-text-secondary'}`}>
                   {day}
                 </div>
                 <div className="space-y-1">
@@ -162,14 +162,14 @@ export default function CalendarView() {
                     <Link
                       key={idea.id}
                       href={`/ideas/${idea.id}`}
-                      className={`block text-xs p-1 rounded truncate hover:opacity-80 ${statusColors[idea.status] || statusColors['Idée']}`}
+                      className={`block text-xs p-1.5 rounded truncate hover:opacity-80 transition-velysion ${statusColors[idea.status] || statusColors['Idée']}`}
                       title={idea.title}
                     >
                       {idea.title}
                     </Link>
                   ))}
                   {dayIdeas.length > 3 && (
-                    <div className="text-xs text-gray-500 px-1">
+                    <div className="text-xs text-text-muted px-1">
                       +{dayIdeas.length - 3} autre{dayIdeas.length - 3 > 1 ? 's' : ''}
                     </div>
                   )}
@@ -181,13 +181,13 @@ export default function CalendarView() {
       </div>
 
       {ideas.length === 0 && (
-        <div className="bg-white rounded-lg shadow p-8 text-center">
-          <p className="text-gray-600 mb-4">
+        <div className="card-velysion p-8 text-center">
+          <p className="text-text-tertiary mb-4">
             Aucune vidéo programmée pour {monthNames[month]} {year}
           </p>
           <Link
             href="/ideas"
-            className="text-primary-600 hover:text-primary-700 font-medium"
+            className="link-velysion font-medium"
           >
             Créer une idée avec date cible
           </Link>

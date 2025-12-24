@@ -1,45 +1,178 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getServerSessionWithTest } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import HomeButton from '@/components/common/HomeButton'
 
 export default async function Home() {
-  const session = await getServerSession(authOptions)
+  try {
+    // Timeout pour éviter les blocages
+    const session = await Promise.race([
+      getServerSessionWithTest(),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 2000))
+    ])
 
-  // Si connecté, rediriger vers le dashboard
-  if (session) {
-    redirect('/dashboard')
-  }
+    // Si connecté, rediriger vers le dashboard
+    if (session) {
+      redirect('/dashboard')
+    }
 
-  return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24 bg-gray-50">
-      <div className="z-10 max-w-5xl w-full items-center justify-between text-center">
-        <h1 className="text-5xl font-bold mb-4 text-gray-900">
-          InfluenceCore
-        </h1>
-        <p className="text-xl text-gray-600 mb-8">
-          Plateforme de gestion pour créateurs de contenu
-        </p>
-        <p className="text-gray-500 mb-12 max-w-2xl mx-auto">
-          Organisez vos idées, scripts et workflow vidéo en un seul endroit.
-          Conçu pour YouTubeurs, Streamers, Vidéastes et Influenceurs.
-        </p>
-        <div className="flex gap-4 justify-center">
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'center', 
+        padding: '2rem',
+        backgroundColor: '#0A0A0F',
+        color: '#FFFFFF',
+        fontFamily: 'system-ui, -apple-system, sans-serif'
+      }}>
+        <div style={{ 
+          maxWidth: '800px', 
+          width: '100%', 
+          textAlign: 'center',
+          zIndex: 10
+        }}>
+          <h1 style={{
+            fontSize: '3.75rem',
+            fontWeight: 'bold',
+            marginBottom: '1.5rem',
+            background: 'linear-gradient(135deg, #9333EA 0%, #EC4899 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text'
+          }}>
+            InfluenceCore
+          </h1>
+          
+          <p style={{
+            fontSize: '1.25rem',
+            marginBottom: '1rem',
+            fontWeight: '500',
+            color: '#E5E7EB'
+          }}>
+            Plateforme de gestion pour créateurs de contenu
+          </p>
+          
+          <p style={{
+            color: '#9CA3AF',
+            marginBottom: '3rem',
+            maxWidth: '600px',
+            marginLeft: 'auto',
+            marginRight: 'auto',
+            fontSize: '1.125rem'
+          }}>
+            Organisez vos idées, scripts et workflow vidéo en un seul endroit.
+            Conçu pour YouTubeurs, Streamers, Vidéastes et Influenceurs.
+          </p>
+          
+          <div style={{
+            display: 'flex',
+            gap: '1rem',
+            justifyContent: 'center',
+            flexWrap: 'wrap'
+          }}>
+            <HomeButton
+              href="/dashboard"
+              style={{
+                backgroundColor: '#F59E0B',
+                color: '#0A0A0F',
+                fontWeight: '600',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '0.5rem',
+                textDecoration: 'none',
+                transition: 'all 0.25s',
+                display: 'inline-block'
+              }}
+              hoverStyle={{
+                backgroundColor: '#D97706',
+                boxShadow: '0 0 20px rgba(245, 158, 11, 0.4)'
+              }}
+            >
+              Accéder au Dashboard
+            </HomeButton>
+            
+            <HomeButton
+              href="/dashboard"
+              style={{
+                background: 'linear-gradient(135deg, #9333EA 0%, #EC4899 100%)',
+                color: 'white',
+                fontWeight: '600',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '0.5rem',
+                textDecoration: 'none',
+                transition: 'all 0.25s',
+                display: 'inline-block'
+              }}
+              hoverStyle={{
+                opacity: '0.9',
+                boxShadow: '0 8px 32px rgba(147, 51, 234, 0.2)'
+              }}
+            >
+              Découvrir la Plateforme
+            </HomeButton>
+          </div>
+          
+          {isTestMode && (
+            <div style={{
+              width: '100%',
+              textAlign: 'center',
+              marginTop: '1rem'
+            }}>
+              <p style={{
+                color: '#9CA3AF',
+                fontSize: '0.875rem',
+                marginBottom: '0.5rem'
+              }}>
+                Mode Test : Accès direct au tableau de bord
+              </p>
+              <p style={{
+                color: '#6B7280',
+                fontSize: '0.75rem'
+              }}>
+                Type utilisateur : {testUserType === 'admin' ? 'Administrateur' : 'Client'}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  } catch (error) {
+    console.error('Erreur dans Home:', error)
+    // En cas d'erreur, afficher une page simple
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#0A0A0F',
+        color: '#FFFFFF',
+        padding: '2rem',
+        textAlign: 'center'
+      }}>
+        <div>
+          <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>InfluenceCore</h1>
+          <p style={{ marginBottom: '2rem', color: '#9CA3AF' }}>
+            Une erreur est survenue. Veuillez consulter la console pour plus de détails.
+          </p>
           <Link
-            href="/login"
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors font-medium"
+            href="/dashboard"
+            style={{
+              backgroundColor: '#F59E0B',
+              color: '#0A0A0F',
+              fontWeight: '600',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '0.5rem',
+              textDecoration: 'none',
+              display: 'inline-block'
+            }}
           >
-            Se connecter
-          </Link>
-          <Link
-            href="/register"
-            className="bg-white text-primary-600 px-6 py-3 rounded-lg border-2 border-primary-600 hover:bg-primary-50 transition-colors font-medium"
-          >
-            Créer un compte
+            Aller au Dashboard
           </Link>
         </div>
       </div>
-    </main>
-  )
+    )
+  }
 }
-

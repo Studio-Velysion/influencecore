@@ -9,22 +9,69 @@ interface ScriptEditorProps {
   onSave?: () => void
 }
 
-export default function ScriptEditor({ scriptId, initialScript, onSave }: ScriptEditorProps) {
-  const [title, setTitle] = useState(initialScript?.title || '')
-  const [content, setContent] = useState<ScriptContent>(
-    initialScript?.content || {
-      hook: '',
-      introduction: '',
-      parts: [],
-      outro: '',
-      cta: '',
+// Helper pour parser le contenu JSON si nécessaire
+const parseContent = (content: any): ScriptContent => {
+  const defaultContent: ScriptContent = {
+    hook: '',
+    introduction: '',
+    parts: [],
+    outro: '',
+    cta: '',
+  }
+
+  if (!content) {
+    return defaultContent
+  }
+
+  let parsed: any
+  if (typeof content === 'string') {
+    try {
+      parsed = JSON.parse(content)
+    } catch {
+      return defaultContent
     }
-  )
-  const [checklist, setChecklist] = useState<ScriptChecklist>(
-    initialScript?.checklist || {
+  } else {
+    parsed = content
+  }
+
+  // S'assurer que tous les champs existent
+  return {
+    hook: parsed.hook || '',
+    introduction: parsed.introduction || '',
+    parts: Array.isArray(parsed.parts) ? parsed.parts : [],
+    outro: parsed.outro || '',
+    cta: parsed.cta || '',
+  }
+}
+
+// Helper pour parser la checklist JSON si nécessaire
+const parseChecklist = (checklist: any): ScriptChecklist => {
+  if (!checklist) {
+    return {
       tournage: [],
       montage: [],
     }
+  }
+  if (typeof checklist === 'string') {
+    try {
+      return JSON.parse(checklist)
+    } catch {
+      return {
+        tournage: [],
+        montage: [],
+      }
+    }
+  }
+  return checklist
+}
+
+export default function ScriptEditor({ scriptId, initialScript, onSave }: ScriptEditorProps) {
+  const [title, setTitle] = useState(initialScript?.title || '')
+  const [content, setContent] = useState<ScriptContent>(
+    parseContent(initialScript?.content)
+  )
+  const [checklist, setChecklist] = useState<ScriptChecklist>(
+    parseChecklist(initialScript?.checklist)
   )
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
@@ -32,8 +79,8 @@ export default function ScriptEditor({ scriptId, initialScript, onSave }: Script
   useEffect(() => {
     if (initialScript) {
       setTitle(initialScript.title)
-      setContent(initialScript.content)
-      setChecklist(initialScript.checklist)
+      setContent(parseContent(initialScript.content))
+      setChecklist(parseChecklist(initialScript.checklist))
     }
   }, [initialScript])
 
@@ -78,14 +125,14 @@ export default function ScriptEditor({ scriptId, initialScript, onSave }: Script
     }
     setContent({
       ...content,
-      parts: [...content.parts, newPart],
+      parts: [...(content?.parts || []), newPart],
     })
   }
 
   const updatePart = (id: string, field: 'title' | 'content', value: string) => {
     setContent({
       ...content,
-      parts: content.parts.map((part) =>
+      parts: (content?.parts || []).map((part) =>
         part.id === id ? { ...part, [field]: value } : part
       ),
     })
@@ -94,7 +141,7 @@ export default function ScriptEditor({ scriptId, initialScript, onSave }: Script
   const removePart = (id: string) => {
     setContent({
       ...content,
-      parts: content.parts.filter((part) => part.id !== id),
+      parts: (content?.parts || []).filter((part) => part.id !== id),
     })
   }
 
@@ -183,7 +230,7 @@ export default function ScriptEditor({ scriptId, initialScript, onSave }: Script
             + Ajouter une partie
           </button>
         </div>
-        {content.parts.map((part, index) => (
+        {(content?.parts || []).map((part, index) => (
           <div key={part.id} className="mb-4 p-4 border border-gray-200 rounded-lg">
             <div className="flex justify-between items-center mb-2">
               <input
@@ -211,7 +258,7 @@ export default function ScriptEditor({ scriptId, initialScript, onSave }: Script
             />
           </div>
         ))}
-        {content.parts.length === 0 && (
+        {(!content?.parts || content.parts.length === 0) && (
           <p className="text-gray-500 text-sm text-center py-4">
             Aucune partie. Cliquez sur "Ajouter une partie" pour commencer.
           </p>

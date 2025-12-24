@@ -1,0 +1,8 @@
+{
+  "id": "system",
+  "type": "mod",
+  "name": "System",
+  "description": "FOSSBilling core module",
+  "icon_url": "icon.svg",
+  "version": "1.0.0"
+}

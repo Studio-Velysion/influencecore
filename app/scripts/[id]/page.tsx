@@ -1,5 +1,4 @@
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getServerSessionWithTest } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Navbar from '@/components/common/Navbar'
 import ScriptDetailClient from '@/components/scripts/ScriptDetailClient'
@@ -9,11 +8,9 @@ export default async function ScriptDetailPage({
 }: {
   params: { id: string }
 }) {
-  const session = await getServerSession(authOptions)
+  const session = await getServerSessionWithTest()
 
-  if (!session) {
-    redirect('/login')
-  }
+  if (!session) redirect('/login')
 
   return (
     <div className="min-h-screen bg-gray-50">

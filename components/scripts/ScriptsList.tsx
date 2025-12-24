@@ -40,7 +40,7 @@ export default function ScriptsList() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-gray-600">Chargement...</div>
+        <div className="text-text-tertiary">Chargement...</div>
       </div>
     )
   }
@@ -49,27 +49,27 @@ export default function ScriptsList() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Mes Scripts</h2>
+          <h2 className="text-3xl font-bold text-text-primary">Mes Scripts</h2>
           {ideaId && (
-            <p className="text-sm text-gray-600 mt-1">
+            <p className="text-sm text-text-tertiary mt-1">
               Scripts associés à cette idée
             </p>
           )}
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+          className="btn-velysion-primary"
         >
           + Nouveau script
         </button>
       </div>
 
       {scripts.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <p className="text-gray-600 mb-4">Aucun script pour le moment</p>
+        <div className="card-velysion p-12 text-center">
+          <p className="text-text-tertiary mb-4">Aucun script pour le moment</p>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="text-primary-600 hover:text-primary-700 font-medium"
+            className="link-velysion font-medium"
           >
             Créer votre premier script
           </button>

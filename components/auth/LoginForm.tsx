@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { signIn } from 'next-auth/react'
+import { getProviders, signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
@@ -13,12 +13,28 @@ export default function LoginForm() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(false)
+  const [hasKeycloak, setHasKeycloak] = useState(false)
 
   useEffect(() => {
     if (searchParams?.get('registered') === 'true') {
       setSuccess('Compte créé avec succès ! Vous pouvez maintenant vous connecter.')
     }
   }, [searchParams])
+
+  useEffect(() => {
+    let mounted = true
+    getProviders()
+      .then((providers) => {
+        if (!mounted) return
+        setHasKeycloak(!!providers?.keycloak)
+      })
+      .catch(() => {
+        // ignore
+      })
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,18 +64,34 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {success && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
+        <div className="bg-state-success/20 border border-state-success/30 text-state-success px-4 py-3 rounded-lg">
           {success}
         </div>
       )}
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="bg-state-error/20 border border-state-error/30 text-state-error px-4 py-3 rounded-lg">
           {error}
         </div>
       )}
 
+      {hasKeycloak && (
+        <button
+          type="button"
+          className="btn-velysion-primary w-full"
+          onClick={() => signIn('keycloak', { callbackUrl: '/dashboard' })}
+        >
+          Se connecter avec Keycloak
+        </button>
+      )}
+
+      {hasKeycloak && (
+        <div className="text-center text-xs text-text-tertiary">
+          ou
+        </div>
+      )}
+
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="email" className="block text-sm font-medium text-text-secondary mb-2">
           Email
         </label>
         <input
@@ -68,13 +100,13 @@ export default function LoginForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="input-velysion w-full"
           placeholder="votre@email.com"
         />
       </div>
 
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+        <label htmlFor="password" className="block text-sm font-medium text-text-secondary mb-2">
           Mot de passe
         </label>
         <input
@@ -83,7 +115,7 @@ export default function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="input-velysion w-full"
           placeholder="••••••••"
         />
       </div>
@@ -91,14 +123,14 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="btn-velysion-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? 'Connexion...' : 'Se connecter'}
       </button>
 
-      <p className="text-center text-sm text-gray-600">
+      <p className="text-center text-sm text-text-tertiary">
         Pas encore de compte ?{' '}
-        <Link href="/register" className="text-primary-600 hover:text-primary-700 font-medium">
+        <Link href="/register" className="link-velysion font-medium">
           Créer un compte
         </Link>
       </p>

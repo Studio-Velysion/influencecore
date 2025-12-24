@@ -14,37 +14,94 @@ export default function Error({
     console.error('Application error:', error)
   }, [error])
 
+  const isChunkLoadError =
+    (error?.name === 'ChunkLoadError') ||
+    (error?.message && error.message.includes('Loading chunk')) ||
+    (error?.message && error.message.includes('ChunkLoadError'))
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
-      <div className="text-center max-w-md">
-        <div className="text-6xl mb-4">⚠️</div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+    <div style={{
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#0A0A0F',
+      color: '#FFFFFF',
+      padding: '2rem',
+      fontFamily: 'system-ui, sans-serif'
+    }}>
+      <div style={{ textAlign: 'center', maxWidth: '600px' }}>
+        <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>⚠️</div>
+        <h2 style={{ fontSize: '2rem', fontWeight: 'bold', marginBottom: '1rem' }}>
           Une erreur est survenue
         </h2>
-        <p className="text-gray-600 mb-6">
-          Désolé, une erreur inattendue s'est produite. Veuillez réessayer.
+        <p style={{ color: '#9CA3AF', marginBottom: '2rem' }}>
+          {isChunkLoadError
+            ? "Le site a été mis à jour et votre navigateur essaie de charger un ancien fichier. Rechargez complètement la page."
+            : "Désolé, une erreur inattendue s'est produite. Veuillez réessayer."}
         </p>
-        <div className="flex gap-4 justify-center">
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button
             onClick={reset}
-            className="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors"
+            style={{
+              backgroundColor: '#F59E0B',
+              color: '#0A0A0F',
+              fontWeight: '600',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '0.5rem',
+              border: 'none',
+              cursor: 'pointer'
+            }}
           >
             Réessayer
           </button>
+          {isChunkLoadError && (
+            <button
+              onClick={() => window.location.reload()}
+              style={{
+                backgroundColor: 'transparent',
+                color: '#FFFFFF',
+                fontWeight: '600',
+                padding: '0.75rem 1.5rem',
+                borderRadius: '0.5rem',
+                border: '2px solid #F59E0B',
+                cursor: 'pointer',
+              }}
+            >
+              Recharger la page
+            </button>
+          )}
           <Link
             href="/dashboard"
-            className="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors"
+            style={{
+              backgroundColor: 'transparent',
+              color: '#FFFFFF',
+              fontWeight: '600',
+              padding: '0.75rem 1.5rem',
+              borderRadius: '0.5rem',
+              border: '2px solid #9333EA',
+              textDecoration: 'none',
+              display: 'inline-block'
+            }}
           >
             Retour au Dashboard
           </Link>
         </div>
         {process.env.NODE_ENV === 'development' && (
-          <details className="mt-6 text-left">
-            <summary className="cursor-pointer text-sm text-gray-500">
+          <details style={{ marginTop: '2rem', textAlign: 'left' }}>
+            <summary style={{ cursor: 'pointer', color: '#9CA3AF', marginBottom: '1rem' }}>
               Détails de l'erreur (dev)
             </summary>
-            <pre className="mt-2 p-4 bg-gray-100 rounded text-xs overflow-auto">
+            <pre style={{
+              padding: '1rem',
+              backgroundColor: '#1A1A24',
+              borderRadius: '0.5rem',
+              fontSize: '0.75rem',
+              overflow: 'auto',
+              color: '#FFFFFF'
+            }}>
               {error.message}
+              {'\n\n'}
               {error.stack}
             </pre>
           </details>

@@ -63,28 +63,28 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="card-velysion max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-purple-500/30">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Nouvelle idée vidéo</h2>
+            <h2 className="text-2xl font-bold text-text-primary">Nouvelle idée vidéo</h2>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-text-tertiary hover:text-purple-400 transition-velysion"
             >
               ✕
             </button>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+            <div className="bg-state-error/20 border border-state-error/30 text-state-error px-4 py-3 rounded-lg mb-4">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="title" className="block text-sm font-medium text-text-secondary mb-2">
                 Titre *
               </label>
               <input
@@ -94,13 +94,13 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
                 value={formData.title}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input-velysion w-full"
                 placeholder="Ex: Mon premier vlog"
               />
             </div>
 
             <div>
-              <label htmlFor="concept" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="concept" className="block text-sm font-medium text-text-secondary mb-2">
                 Concept
               </label>
               <textarea
@@ -109,14 +109,14 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
                 value={formData.concept}
                 onChange={handleChange}
                 rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input-velysion w-full"
                 placeholder="Décrivez votre idée de vidéo..."
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="platform" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="platform" className="block text-sm font-medium text-text-secondary mb-2">
                   Plateforme
                 </label>
                 <select
@@ -124,7 +124,7 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
                   name="platform"
                   value={formData.platform}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="input-velysion w-full"
                 >
                   <option value="">Sélectionner...</option>
                   <option value="YouTube">YouTube</option>
@@ -136,7 +136,7 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
               </div>
 
               <div>
-                <label htmlFor="format" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="format" className="block text-sm font-medium text-text-secondary mb-2">
                   Format
                 </label>
                 <select
@@ -144,7 +144,7 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
                   name="format"
                   value={formData.format}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="input-velysion w-full"
                 >
                   <option value="">Sélectionner...</option>
                   <option value="Long">Long</option>
@@ -156,7 +156,7 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="status" className="block text-sm font-medium text-text-secondary mb-2">
                   Statut
                 </label>
                 <select
@@ -164,7 +164,7 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="input-velysion w-full"
                 >
                   <option value="Idée">Idée</option>
                   <option value="Écriture">Écriture</option>
@@ -176,7 +176,7 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
               </div>
 
               <div>
-                <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="priority" className="block text-sm font-medium text-text-secondary mb-2">
                   Priorité
                 </label>
                 <select
@@ -184,7 +184,7 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
                   name="priority"
                   value={formData.priority}
                   onChange={handleChange}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  className="input-velysion w-full"
                 >
                   <option value="">Aucune</option>
                   <option value="Haute">Haute</option>
@@ -195,7 +195,7 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
             </div>
 
             <div>
-              <label htmlFor="targetDate" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="targetDate" className="block text-sm font-medium text-text-secondary mb-2">
                 Date cible
               </label>
               <input
@@ -204,7 +204,7 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
                 type="date"
                 value={formData.targetDate}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                className="input-velysion w-full"
               />
             </div>
 
@@ -212,14 +212,14 @@ export default function CreateIdeaModal({ onClose, onSuccess }: CreateIdeaModalP
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                className="flex-1 px-4 py-2 border border-border-dark rounded-lg text-text-secondary hover:bg-bg-hover transition-velysion"
               >
                 Annuler
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="flex-1 btn-velysion-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Création...' : 'Créer l\'idée'}
               </button>

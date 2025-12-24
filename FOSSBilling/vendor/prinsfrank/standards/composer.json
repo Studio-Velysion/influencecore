@@ -1,0 +1,66 @@
+{
+    "name": "prinsfrank/standards",
+    "type": "library",
+    "description": "A collection of standards as PHP Enums: ISO3166, ISO4217, ISO639...",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "PrinsFrank\\Standards\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "PrinsFrank\\Standards\\Tests\\": "tests/",
+            "PrinsFrank\\Standards\\Dev\\": "dev/"
+        }
+    },
+    "require": {
+        "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
+        "ext-intl": "*",
+        "ext-mbstring": "*",
+        "prinsfrank/enums": "^1.4"
+    },
+    "require-dev": {
+        "ext-dom": "*",
+        "friendsofphp/php-cs-fixer": "^3.8",
+        "phpunit/phpunit": "^11.2.6",
+        "symfony/panther": "dev-main",
+        "dbrekelmans/bdi": "^1.0",
+        "phpstan/phpstan": "^2",
+        "composer/composer": "^2.3",
+        "prinsfrank/transliteration": "^1.0",
+        "phpstan/phpstan-strict-rules": "^2",
+        "prinsfrank/pdfparser": "^2.1"
+    },
+    "scripts": {
+        "cs": "php-cs-fixer fix --allow-risky=yes --dry-run",
+        "cs:fix": "php-cs-fixer fix --allow-risky=yes",
+        "stan": "phpstan analyse --memory-limit 4G -v",
+        "unit": "phpunit --testsuite=Unit",
+        "test": [
+            "@unit",
+            "@cs"
+        ],
+        "detect-drivers": "bdi detect drivers",
+        "update-spec": "PrinsFrank\\Standards\\Dev\\SpecUpdater::update",
+        "update-spec-country": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\CountryMapping",
+        "update-spec-country-calling-code": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\CountryCallingCodeMapping",
+        "update-spec-currency": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\CurrencyMapping",
+        "update-spec-eu": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\EUMapping",
+        "update-spec-http-methods": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\HttpMethodMapping",
+        "update-spec-http-status-codes": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\HttpStatusCodeMapping",
+        "update-spec-language-extensive": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\LanguageExtensiveMapping",
+        "update-spec-language": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\LanguageMapping",
+        "update-spec-language-subtag": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\LanguageSubTagMapping",
+        "update-spec-php-regex-script": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\PHPRegexSupportedScriptsMapping",
+        "update-spec-scripts": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\ScriptMapping",
+        "update-spec-tld": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\TopLevelDomainMapping",
+        "update-spec-uri-scheme": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\URISchemeMapping",
+        "update-spec-wto": "@update-spec PrinsFrank\\Standards\\Dev\\DataSource\\Mapping\\WorldTradeOrganizationMapping"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "3.x-dev"
+        }
+    }
+}

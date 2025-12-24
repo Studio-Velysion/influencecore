@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getServerSessionWithTest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET - Récupérer toutes les notes de l'utilisateur
 export async function GET(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSessionWithTest()
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
@@ -43,7 +42,7 @@ export async function GET(request: NextRequest) {
 // POST - Créer une nouvelle note
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSessionWithTest()
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })

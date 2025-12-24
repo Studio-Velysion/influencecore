@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getServerSessionWithTest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 // GET - Récupérer un script spécifique
@@ -9,7 +8,7 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSessionWithTest()
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
@@ -37,7 +36,14 @@ export async function GET(
       )
     }
 
-    return NextResponse.json(script)
+    // Parser les champs JSON pour SQLite
+    const parsedScript = {
+      ...script,
+      content: typeof script.content === 'string' ? JSON.parse(script.content) : script.content,
+      checklist: typeof script.checklist === 'string' ? JSON.parse(script.checklist) : script.checklist,
+    }
+
+    return NextResponse.json(parsedScript)
   } catch (error) {
     console.error('Erreur lors de la récupération du script:', error)
     return NextResponse.json(
@@ -53,7 +59,7 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSessionWithTest()
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })
@@ -77,6 +83,10 @@ export async function PUT(
       )
     }
 
+    // Pour SQLite, Prisma attend des chaînes JSON pour les champs Json
+    const contentToSave = content !== undefined ? content : existingScript.content
+    const checklistToSave = checklist !== undefined ? checklist : existingScript.checklist
+
     const script = await prisma.videoScript.update({
       where: {
         id: params.id,
@@ -84,8 +94,8 @@ export async function PUT(
       data: {
         title: title !== undefined ? title : existingScript.title,
         videoIdeaId: videoIdeaId !== undefined ? videoIdeaId : existingScript.videoIdeaId,
-        content: content !== undefined ? content : existingScript.content,
-        checklist: checklist !== undefined ? checklist : existingScript.checklist,
+        content: typeof contentToSave === 'string' ? contentToSave : JSON.stringify(contentToSave),
+        checklist: typeof checklistToSave === 'string' ? checklistToSave : JSON.stringify(checklistToSave),
       },
       include: {
         videoIdea: {
@@ -97,7 +107,14 @@ export async function PUT(
       },
     })
 
-    return NextResponse.json(script)
+    // Parser les champs JSON pour SQLite
+    const parsedScript = {
+      ...script,
+      content: typeof script.content === 'string' ? JSON.parse(script.content) : script.content,
+      checklist: typeof script.checklist === 'string' ? JSON.parse(script.checklist) : script.checklist,
+    }
+
+    return NextResponse.json(parsedScript)
   } catch (error) {
     console.error('Erreur lors de la mise à jour du script:', error)
     return NextResponse.json(
@@ -113,7 +130,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSessionWithTest()
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Non authentifié' }, { status: 401 })

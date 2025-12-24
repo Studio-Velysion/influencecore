@@ -56,14 +56,14 @@ export default function NoteCard({ note, onUpdate, onDelete }: NoteCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow">
+    <div className="card-velysion p-4">
       {editing ? (
         <div className="space-y-3">
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            className="input-velysion w-full"
             placeholder="Contenu de la note..."
           />
           <input
@@ -71,13 +71,13 @@ export default function NoteCard({ note, onUpdate, onDelete }: NoteCardProps) {
             value={tag}
             onChange={(e) => setTag(e.target.value)}
             placeholder="Tag (optionnel)"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+            className="input-velysion w-full"
           />
           <div className="flex gap-2">
             <button
               onClick={handleSave}
               disabled={saving}
-              className="flex-1 bg-primary-600 text-white px-3 py-1 rounded-lg hover:bg-primary-700 disabled:opacity-50 text-sm"
+              className="flex-1 btn-velysion-primary text-sm disabled:opacity-50"
             >
               {saving ? 'Sauvegarde...' : 'Enregistrer'}
             </button>
@@ -87,7 +87,7 @@ export default function NoteCard({ note, onUpdate, onDelete }: NoteCardProps) {
                 setContent(note.content)
                 setTag(note.tag || '')
               }}
-              className="px-3 py-1 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 text-sm"
+              className="px-3 py-1 border border-border-dark rounded-lg text-text-secondary hover:bg-bg-hover text-sm transition-velysion"
             >
               Annuler
             </button>
@@ -97,21 +97,21 @@ export default function NoteCard({ note, onUpdate, onDelete }: NoteCardProps) {
         <>
           <div className="flex justify-between items-start mb-2">
             {note.tag && (
-              <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded">
+              <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded border border-purple-500/30">
                 {note.tag}
               </span>
             )}
             <div className="flex gap-2">
               <button
                 onClick={() => setEditing(true)}
-                className="text-xs text-gray-600 hover:text-gray-900"
+                className="text-xs text-text-tertiary hover:text-purple-400 transition-velysion"
               >
                 ✏️
               </button>
               {!deleteConfirm ? (
                 <button
                   onClick={() => setDeleteConfirm(true)}
-                  className="text-xs text-red-600 hover:text-red-700"
+                  className="text-xs text-state-error hover:text-red-400 transition-velysion"
                 >
                   🗑️
                 </button>
@@ -119,13 +119,13 @@ export default function NoteCard({ note, onUpdate, onDelete }: NoteCardProps) {
                 <div className="flex gap-1">
                   <button
                     onClick={handleDelete}
-                    className="text-xs text-red-600 hover:text-red-700"
+                    className="text-xs text-state-error hover:text-red-400 transition-velysion"
                   >
                     ✓
                   </button>
                   <button
                     onClick={() => setDeleteConfirm(false)}
-                    className="text-xs text-gray-600"
+                    className="text-xs text-text-tertiary hover:text-text-secondary transition-velysion"
                   >
                     ✕
                   </button>
@@ -133,8 +133,8 @@ export default function NoteCard({ note, onUpdate, onDelete }: NoteCardProps) {
               )}
             </div>
           </div>
-          <p className="text-gray-900 whitespace-pre-wrap mb-2">{note.content}</p>
-          <div className="text-xs text-gray-400">
+          <p className="text-text-primary whitespace-pre-wrap mb-2">{note.content}</p>
+          <div className="text-xs text-text-muted">
             {new Date(note.createdAt).toLocaleDateString('fr-FR', {
               day: 'numeric',
               month: 'short',

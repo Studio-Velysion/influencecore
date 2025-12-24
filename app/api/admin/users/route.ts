@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { getServerSessionWithTest } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { checkPermission, PERMISSIONS } from '@/lib/permissions'
 
@@ -17,10 +16,12 @@ export async function GET(request: NextRequest) {
 
     const where: any = {}
     if (search) {
+      // SQLite ne supporte pas mode: 'insensitive', on utilise contains directement
+      // La recherche sera case-sensitive mais fonctionnelle
       where.OR = [
-        { email: { contains: search, mode: 'insensitive' } },
-        { name: { contains: search, mode: 'insensitive' } },
-        { pseudo: { contains: search, mode: 'insensitive' } },
+        { email: { contains: search } },
+        { name: { contains: search } },
+        { pseudo: { contains: search } },
       ]
     }
 

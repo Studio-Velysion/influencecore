@@ -1,0 +1,68 @@
+:root {
+  --velysion-bg: #0A0A0F;
+  --velysion-card: rgba(18, 18, 26, 0.80);
+  --velysion-border: rgba(255, 255, 255, 0.10);
+  --velysion-text: #FFFFFF;
+  --velysion-muted: #9CA3AF;
+  --velysion-purple: #9333EA;
+  --velysion-pink: #EC4899;
+  --velysion-accent: #A855F7;
+}
+
+/* Fond */
+body, .kcBodyClass {
+  background: radial-gradient(1200px 800px at 20% 10%, rgba(147, 51, 234, 0.25), transparent 60%),
+              radial-gradient(1200px 800px at 80% 20%, rgba(236, 72, 153, 0.18), transparent 60%),
+              var(--velysion-bg) !important;
+  color: var(--velysion-text) !important;
+}
+
+/* Card / container */
+.card-pf, .kcFormCardClass {
+  background: var(--velysion-card) !important;
+  border: 1px solid var(--velysion-border) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.35) !important;
+  backdrop-filter: blur(12px);
+}
+
+/* Liens */
+a, .kcLink {
+  color: var(--velysion-accent) !important;
+}
+a:hover, .kcLink:hover {
+  color: #c084fc !important;
+}
+
+/* Boutons */
+.btn-primary, .kcButtonPrimaryClass {
+  background: linear-gradient(135deg, var(--velysion-purple), var(--velysion-pink)) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  font-weight: 700 !important;
+}
+.btn-primary:hover, .kcButtonPrimaryClass:hover {
+  filter: brightness(1.08);
+}
+
+/* Inputs */
+input, .form-control, .kcInputClass {
+  background: rgba(10, 10, 15, 0.65) !important;
+  border: 1px solid rgba(147, 51, 234, 0.25) !important;
+  color: var(--velysion-text) !important;
+  border-radius: 12px !important;
+}
+input:focus, .form-control:focus, .kcInputClass:focus {
+  border-color: rgba(168, 85, 247, 0.8) !important;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.20) !important;
+}
+
+/* Textes secondaires */
+.kcFormHeaderClass, .kcHeaderWrapperClass, .kcFormGroupClass label {
+  color: var(--velysion-text) !important;
+}
+.subtitle, .kcInfoTextClass, .kcLabelWrapperClass, .kcInputHelperTextClass {
+  color: var(--velysion-muted) !important;
+}
+
+

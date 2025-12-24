@@ -38,8 +38,8 @@ export default function QuickNotesWidget() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+    <div className="card-velysion">
+      <h3 className="text-lg font-semibold text-text-primary mb-4">
         Notes instantanées
       </h3>
       <form onSubmit={handleSubmit}>
@@ -47,19 +47,21 @@ export default function QuickNotesWidget() {
           value={content}
           onChange={(e) => setContent(e.target.value)}
           rows={4}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          className="input-velysion w-full"
           placeholder="Écrivez une note rapide..."
         />
         <div className="flex justify-between items-center mt-4">
           <button
             type="submit"
             disabled={loading || !content.trim()}
-            className="bg-primary-600 text-white py-2 px-4 rounded-lg hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="btn-velysion-primary disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Enregistrement...' : 'Enregistrer'}
           </button>
           {success && (
-            <span className="text-sm text-green-600">✓ Note enregistrée !</span>
+            <span className="text-sm text-state-success flex items-center gap-2">
+              <span>✓</span> Note enregistrée !
+            </span>
           )}
         </div>
       </form>

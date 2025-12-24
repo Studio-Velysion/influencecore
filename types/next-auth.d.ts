@@ -8,6 +8,7 @@ declare module 'next-auth' {
       name?: string | null
       pseudo?: string | null
       isAdmin?: boolean
+      roles?: string[]
     }
   }
 
@@ -17,6 +18,7 @@ declare module 'next-auth' {
     name?: string | null
     pseudo?: string | null
     isAdmin?: boolean
+    roles?: string[]
   }
 }
 
@@ -27,6 +29,7 @@ declare module 'next-auth/jwt' {
     name?: string | null
     pseudo?: string | null
     isAdmin?: boolean
+    roles?: string[]
   }
 }
 

@@ -45,7 +45,7 @@ export default function NotesList() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-gray-600">Chargement...</div>
+        <div className="text-text-tertiary">Chargement...</div>
       </div>
     )
   }
@@ -53,10 +53,10 @@ export default function NotesList() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Notes rapides</h2>
+        <h2 className="text-3xl font-bold text-text-primary">Notes rapides</h2>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+          className="btn-velysion-primary"
         >
           + Nouvelle note
         </button>
@@ -66,10 +66,10 @@ export default function NotesList() {
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setSelectedTag(null)}
-            className={`px-3 py-1 rounded-lg text-sm ${
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-velysion ${
               selectedTag === null
-                ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                : 'bg-bg-tertiary text-text-secondary hover:bg-bg-hover border border-border-dark'
             }`}
           >
             Toutes
@@ -78,10 +78,10 @@ export default function NotesList() {
             <button
               key={tag}
               onClick={() => setSelectedTag(tag)}
-              className={`px-3 py-1 rounded-lg text-sm ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-velysion ${
                 selectedTag === tag
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                  : 'bg-bg-tertiary text-text-secondary hover:bg-bg-hover border border-border-dark'
               }`}
             >
               {tag}
@@ -91,11 +91,11 @@ export default function NotesList() {
       )}
 
       {notes.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <p className="text-gray-600 mb-4">Aucune note pour le moment</p>
+        <div className="card-velysion p-12 text-center">
+          <p className="text-text-tertiary mb-4">Aucune note pour le moment</p>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="text-primary-600 hover:text-primary-700 font-medium"
+            className="link-velysion font-medium"
           >
             Créer votre première note
           </button>

@@ -42,7 +42,7 @@ export default function KanbanBoard() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="text-gray-600">Chargement...</div>
+        <div className="text-text-tertiary">Chargement...</div>
       </div>
     )
   }
@@ -50,10 +50,10 @@ export default function KanbanBoard() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Mes Idées Vidéos</h2>
+        <h2 className="text-3xl font-bold text-text-primary">Mes Idées Vidéos</h2>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors"
+          className="btn-velysion-primary"
         >
           + Nouvelle idée
         </button>
@@ -66,17 +66,17 @@ export default function KanbanBoard() {
             return (
               <div
                 key={status}
-                className="flex-shrink-0 w-80 bg-gray-50 rounded-lg p-4"
+                className="flex-shrink-0 w-80 card-velysion"
               >
                 <div className="flex justify-between items-center mb-4">
-                  <h3 className="font-semibold text-gray-900">{status}</h3>
-                  <span className="bg-gray-200 text-gray-700 text-xs px-2 py-1 rounded-full">
+                  <h3 className="font-semibold text-text-primary">{status}</h3>
+                  <span className="bg-purple-500/20 text-purple-400 text-xs px-3 py-1 rounded-full border border-purple-500/30">
                     {statusIdeas.length}
                   </span>
                 </div>
                 <div className="space-y-3 min-h-[200px]">
                   {statusIdeas.length === 0 ? (
-                    <div className="text-center text-gray-400 text-sm py-8">
+                    <div className="text-center text-text-muted text-sm py-8">
                       Aucune idée
                     </div>
                   ) : (

@@ -1,0 +1,27 @@
+{
+  "realm": "influencecore",
+  "enabled": true,
+  "displayName": "InfluenceCore",
+  "loginTheme": "velysion",
+  "roles": {
+    "realm": [
+      { "name": "influencecore-admin", "description": "Administrateur InfluenceCore" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "influencecore-web",
+      "name": "InfluenceCore Web",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "CHANGE_THIS_SECRET",
+      "redirectUris": ["http://localhost:3000/*"],
+      "webOrigins": ["http://localhost:3000"],
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true
+    }
+  ]
+}
+
+

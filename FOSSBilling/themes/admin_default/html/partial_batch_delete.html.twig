@@ -1,0 +1,60 @@
+<a class="btn btn-danger d-none" id="batch-delete-selected-btn">
+    <svg class="icon">
+        <use xlink:href="#delete"/>
+    </svg>
+    {{ 'Delete selected'|trans }}</a>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const deleteBtn = document.getElementById('batch-delete-selected-btn');
+        const masterCheckbox = document.querySelector('input.batch-delete-master-checkbox');
+        const checkboxes = document.querySelectorAll('input.batch-delete-checkbox');
+
+        masterCheckbox.addEventListener('change', toggleDeleteBtn);
+        checkboxes.forEach((cb) => {
+            cb.addEventListener('change', toggleDeleteBtn)
+        });
+
+        function toggleDeleteBtn() {
+            const empty = [].filter.call(checkboxes, function (cb) {
+                return !cb.checked
+            });
+            if (empty.length !== checkboxes.length) {
+                deleteBtn.classList.remove('d-none');
+                deleteBtn.classList.add('d-inline-flex');
+                return;
+            }
+            deleteBtn.classList.remove('d-inline-flex');
+            deleteBtn.classList.add('d-none');
+        }
+
+        $('#batch-delete-selected-btn').on('click', function () {
+            if ($('input.batch-delete-checkbox:checked').length) {
+                Modals.create({
+                    type: 'danger',
+                    title: "{{ 'Are you sure?'|trans }}",
+                    content: "{{ 'Are you sure you want to delete the selected items?'|trans }}",
+                    confirmCallback: function() {
+                        var ids = $('input.batch-delete-checkbox:checked').map(function() {
+                            return $(this).attr("data-item-id");
+                        }).get();
+                        bb.post('{{ action }}', { ids: ids, CSRFToken: "{{ CSRFToken }}" }, function (result) {
+                            bb.reload();
+                        })
+                    }
+                });
+            } else {
+                Modals.create({
+                    type: 'small',
+                    title: "{{ 'No items selected'|trans }}",
+                    content: "{{ 'You need to select at least one item to delete'|trans }}",
+                });
+            }
+        });
+
+        $('input.batch-delete-master-checkbox').on('click', function () {
+            $('input.batch-delete-checkbox').prop('checked', this.checked);
+        });
+    });
+</script>

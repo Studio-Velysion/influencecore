@@ -5,6 +5,9 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
 export const authOptions: NextAuthOptions = {
+  // CapRover / reverse proxy: permet à NextAuth d'utiliser x-forwarded-host/proto
+  // pour construire automatiquement les URLs quand NEXTAUTH_URL n'est pas défini.
+  trustHost: true,
   providers: [
     // Keycloak (SSO + rôles)
     ...(process.env.KEYCLOAK_ISSUER &&

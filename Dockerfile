@@ -28,10 +28,14 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.js ./next.config.js
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/scripts ./scripts
+COPY --from=builder /app/docker/entrypoint.sh ./docker/entrypoint.sh
 
-EXPOSE 3000
+RUN chmod +x ./docker/entrypoint.sh
 
-# Ensure Prisma client exists at runtime too
-CMD ["sh", "-lc", "npx prisma generate --schema prisma/schema.prisma && npm run db:push && node scripts/create-initial-admin.cjs && npm run start"]
+EXPOSE 3000 80
+
+# Ensure Prisma + DB schema + initial admin (idempotent) then run Next
+CMD ["./docker/entrypoint.sh"]
 
 

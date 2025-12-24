@@ -5,6 +5,8 @@ npm-install.log
 *.log
 .env
 .env.*
+docker/.env
+docker/.env.*
 terminals
 keycloak-main
 postiz-app-main/node_modules

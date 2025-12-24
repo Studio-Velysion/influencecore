@@ -61,6 +61,7 @@ services:
       mariadb:
         condition: service_healthy
     environment:
+      PORT: "3000"
       # Prisma (MariaDB)
       DATABASE_URL: "mysql://root:${MARIADB_ROOT_PASSWORD}@mariadb:3306/influencecore"
       # NextAuth
@@ -76,6 +77,7 @@ services:
       INITIAL_ADMIN_NAME: ${INITIAL_ADMIN_NAME}
       INITIAL_ADMIN_PSEUDO: ${INITIAL_ADMIN_PSEUDO}
       INITIAL_ADMIN_SELF_DELETE: "true"
+      AUTO_DB_PUSH: "true"
       # Integrations (URLs)
       NEXT_PUBLIC_HELPDESK_DASHBOARD_URL: ${NEXT_PUBLIC_HELPDESK_DASHBOARD_URL}
       NEXT_PUBLIC_FOSSBILLING_DASHBOARD_URL: ${NEXT_PUBLIC_FOSSBILLING_DASHBOARD_URL}

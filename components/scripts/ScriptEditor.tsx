@@ -260,7 +260,7 @@ export default function ScriptEditor({ scriptId, initialScript, onSave }: Script
         ))}
         {(!content?.parts || content.parts.length === 0) && (
           <p className="text-gray-500 text-sm text-center py-4">
-            Aucune partie. Cliquez sur "Ajouter une partie" pour commencer.
+            Aucune partie. Cliquez sur &quot;Ajouter une partie&quot; pour commencer.
           </p>
         )}
       </div>

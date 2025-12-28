@@ -32,7 +32,7 @@ export default function NotFound() {
           Page non trouvée
         </h2>
         <p style={{ color: '#9CA3AF', marginBottom: '2rem' }}>
-          La page que vous recherchez n'existe pas ou a été déplacée.
+          La page que vous recherchez n&apos;existe pas ou a été déplacée.
         </p>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <Link
@@ -62,7 +62,7 @@ export default function NotFound() {
               display: 'inline-block'
             }}
           >
-            Page d'accueil
+            Page d&apos;accueil
           </Link>
         </div>
       </div>

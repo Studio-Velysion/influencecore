@@ -69,7 +69,7 @@ export default class ErrorBoundaryWithLogging extends Component<Props, State> {
                 Une erreur est survenue
               </h2>
               <p className="text-text-secondary mb-6">
-                Désolé, une erreur inattendue s'est produite. L'erreur a été enregistrée et sera examinée.
+                Désolé, une erreur inattendue s&apos;est produite. L&apos;erreur a été enregistrée et sera examinée.
               </p>
               {process.env.NODE_ENV === 'development' && this.state.error && (
                 <div className="mb-4 p-4 bg-bg-secondary rounded-lg text-left">

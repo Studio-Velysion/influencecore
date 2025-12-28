@@ -37,7 +37,7 @@ export default class ErrorBoundary extends Component<Props, State> {
                 Une erreur est survenue
               </h2>
               <p className="text-gray-600 mb-6">
-                Désolé, une erreur inattendue s'est produite.
+                Désolé, une erreur inattendue s&apos;est produite.
               </p>
               <button
                 onClick={() => {

@@ -90,7 +90,7 @@ export default function Error({
         {process.env.NODE_ENV === 'development' && (
           <details style={{ marginTop: '2rem', textAlign: 'left' }}>
             <summary style={{ cursor: 'pointer', color: '#9CA3AF', marginBottom: '1rem' }}>
-              Détails de l'erreur (dev)
+              Détails de l&apos;erreur (dev)
             </summary>
             <pre style={{
               padding: '1rem',

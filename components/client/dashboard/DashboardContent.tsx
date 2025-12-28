@@ -392,7 +392,7 @@ export default function DashboardContent() {
             Bienvenue sur votre tableau de bord
           </Text>
           <Text color="text.secondary" mb={4}>
-            Vous n'avez pas encore de permissions configurées. Contactez un administrateur pour obtenir l'accès aux fonctionnalités.
+            Vous n&apos;avez pas encore de permissions configurées. Contactez un administrateur pour obtenir l&apos;accès aux fonctionnalités.
           </Text>
         </Box>
         <Box mb="24px">

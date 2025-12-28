@@ -122,7 +122,7 @@ export default function CalendarView() {
             onClick={() => setCurrentDate(new Date())}
             className="px-4 py-2 text-sm link-velysion font-medium"
           >
-            Aujourd'hui
+            Aujourd&apos;hui
           </button>
         </div>
       </div>

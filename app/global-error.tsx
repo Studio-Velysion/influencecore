@@ -37,7 +37,7 @@ export default function GlobalError({
               Erreur Critique
             </h1>
             <p style={{ color: '#9CA3AF', marginBottom: '2rem' }}>
-              Une erreur critique s'est produite. Veuillez recharger la page.
+              Une erreur critique s&apos;est produite. Veuillez recharger la page.
             </p>
             <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
               <button
@@ -66,13 +66,13 @@ export default function GlobalError({
                   cursor: 'pointer'
                 }}
               >
-                Page d'accueil
+                Page d&apos;accueil
               </button>
             </div>
             {process.env.NODE_ENV === 'development' && (
               <details style={{ marginTop: '2rem', textAlign: 'left' }}>
                 <summary style={{ cursor: 'pointer', color: '#9CA3AF', marginBottom: '1rem' }}>
-                  Détails de l'erreur (dev)
+                  Détails de l&apos;erreur (dev)
                 </summary>
                 <pre style={{
                   padding: '1rem',

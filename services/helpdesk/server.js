@@ -239,6 +239,62 @@ async function handleMethod(req, reply, methodName) {
         },
       ])
     }
+    // --- Minimal stubs to keep the Desk UI usable (returns empty data instead of crashing) ---
+    case 'helpdesk.api.session.get_users': {
+      return ok([])
+    }
+    case 'helpdesk.api.dashboard.get_dashboard_data': {
+      return ok({
+        number_cards: [],
+        master_data: [],
+        trend_data: [],
+      })
+    }
+    case 'helpdesk.api.search.search': {
+      return ok({ results: [] })
+    }
+    case 'helpdesk.api.search.get_filter_options': {
+      return ok([])
+    }
+    case 'helpdesk.api.knowledge_base.get_general_category': {
+      return ok(null)
+    }
+    case 'helpdesk.api.knowledge_base.get_categories': {
+      return ok([])
+    }
+    case 'helpdesk.api.knowledge_base.get_category_title': {
+      return ok('')
+    }
+    case 'helpdesk.api.knowledge_base.get_category_articles': {
+      return ok([])
+    }
+    case 'helpdesk.api.knowledge_base.get_article': {
+      return ok(null)
+    }
+    case 'helpdesk.api.article.search': {
+      return ok([])
+    }
+    case 'helpdesk.api.contact.search_contacts': {
+      return ok([])
+    }
+    case 'helpdesk.api.doc.get_list_data': {
+      return ok({ data: [], total_count: 0 })
+    }
+    case 'helpdesk.api.doc.get_filterable_fields': {
+      return ok([])
+    }
+    case 'helpdesk.api.doc.sort_options': {
+      return ok([])
+    }
+    case 'helpdesk.api.doc.get_quick_filters': {
+      return ok([])
+    }
+    case 'helpdesk.api.agent.sent_invites': {
+      return ok([])
+    }
+    case 'helpdesk.api.doc.remove_assignments': {
+      return ok(true)
+    }
     default: {
       // Generic stub: keep UI running while we progressively implement endpoints
       return ok({ __unimplemented__: true, method: methodName })

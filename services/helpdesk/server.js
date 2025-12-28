@@ -89,6 +89,35 @@ async function ensureSchema() {
     );
   `)
 
+  // Knowledge Base
+  await dbExec(`
+    create table if not exists hd_kb_category (
+      name text primary key,
+      title text not null,
+      is_general int not null default 0,
+      creation timestamptz not null default now(),
+      modified timestamptz not null default now(),
+      owner text not null default 'system',
+      modified_by text not null default 'system'
+    );
+  `)
+
+  await dbExec(`
+    create table if not exists hd_kb_article (
+      name text primary key,
+      title text not null,
+      content text not null,
+      status text not null default 'Published',
+      category text references hd_kb_category(name) on delete set null,
+      views int not null default 0,
+      feedback jsonb not null default '{}'::jsonb,
+      creation timestamptz not null default now(),
+      modified timestamptz not null default now(),
+      owner text not null,
+      modified_by text not null
+    );
+  `)
+
   // Seed statuses (idempotent)
   const statuses = [
     { name: 'Open', label_agent: 'Open', label_customer: 'Open', category: 'Open', order: 1, color: 'Blue' },
@@ -117,6 +146,14 @@ async function ensureSchema() {
      values ($1, $2, $3::jsonb)
      on conflict (name) do nothing`,
     ['Default', '', '[]']
+  )
+
+  // Seed general category (idempotent)
+  await dbExec(
+    `insert into hd_kb_category (name, title, is_general)
+     values ($1,$2,1)
+     on conflict (name) do update set title=excluded.title, is_general=1, modified=now()`,
+    ['general', 'General']
   )
 }
 
@@ -407,6 +444,24 @@ async function handleMethod(req, reply, methodName) {
         )
         return ok({ name })
       }
+      if (doctype === 'HD Article') {
+        const counterRes = await dbExec(`select count(*)::int as c from hd_kb_article`)
+        const n = (counterRes.rows[0]?.c || 0) + 1
+        const name = `KB-${String(n).padStart(6, '0')}`
+        await dbExec(
+          `insert into hd_kb_article (name, title, content, category, status, owner, modified_by, feedback)
+           values ($1,$2,$3,$4,$5,$6,$6,'{}'::jsonb)`,
+          [
+            name,
+            doc.title || '',
+            doc.content || '',
+            doc.category || 'general',
+            doc.status || 'Published',
+            owner,
+          ]
+        )
+        return ok({ name })
+      }
       return ok({ name: doc?.name || 'unknown' })
     }
     case 'frappe.client.set_value': {
@@ -426,6 +481,24 @@ async function handleMethod(req, reply, methodName) {
         )
         return ok(true)
       }
+      if (doctype === 'HD Article') {
+        const allowed = new Set(['status', 'title', 'content', 'category'])
+        if (!allowed.has(fieldname)) return ok(true)
+        await dbExec(
+          `update hd_kb_article set ${fieldname}=$1, modified=now(), modified_by=$2 where name=$3`,
+          [value, user, name]
+        )
+        return ok(true)
+      }
+      if (doctype === 'HD KB Category' || doctype === 'HD Category') {
+        // Some UI paths use generic set_value for category title (we map to our table)
+        if (fieldname !== 'title') return ok(true)
+        await dbExec(
+          `update hd_kb_category set title=$1, modified=now(), modified_by=$2 where name=$3`,
+          [value, user, name]
+        )
+        return ok(true)
+      }
       return ok(true)
     }
     case 'frappe.client.delete': {
@@ -433,6 +506,14 @@ async function handleMethod(req, reply, methodName) {
       const name = req.body?.name
       if (doctype === 'HD Ticket') {
         await dbExec(`delete from hd_ticket where name=$1`, [name])
+        return ok(true)
+      }
+      if (doctype === 'HD Article') {
+        await dbExec(`delete from hd_kb_article where name=$1`, [name])
+        return ok(true)
+      }
+      if (doctype === 'HD KB Category' || doctype === 'HD Category') {
+        await dbExec(`delete from hd_kb_category where name=$1`, [name])
         return ok(true)
       }
       return ok(true)
@@ -449,6 +530,21 @@ async function handleMethod(req, reply, methodName) {
           await dbExec(
             `insert into hd_ticket_seen (ticket_name, user_id) values ($1,$2) on conflict do nothing`,
             [dn, user]
+          )
+        }
+        return ok(true)
+      }
+      if (dt === 'HD Article' && method === 'set_feedback') {
+        const user = session?.user_id || 'Guest'
+        const val = req.body?.args?.value
+        // Store a very small feedback record { user_id: value }
+        if (user !== 'Guest' && (val === 'up' || val === 'down')) {
+          await dbExec(
+            `update hd_kb_article
+             set feedback = jsonb_set(coalesce(feedback,'{}'::jsonb), $1::text[], to_jsonb($2::text), true),
+                 modified=now()
+             where name=$3`,
+            [[user], val, dn]
           )
         }
         return ok(true)
@@ -553,22 +649,109 @@ async function handleMethod(req, reply, methodName) {
       return ok([])
     }
     case 'helpdesk.api.knowledge_base.get_general_category': {
-      return ok(null)
+      return ok('general')
     }
     case 'helpdesk.api.knowledge_base.get_categories': {
-      return ok([])
+      const res = await dbExec(
+        `select name, title from hd_kb_category order by is_general desc, title asc`
+      )
+      // UI expects array of { label, value } in some places, and { title, name } in others.
+      return ok(res.rows.map((r) => ({ label: r.title, value: r.name, name: r.name, title: r.title })))
     }
     case 'helpdesk.api.knowledge_base.get_category_title': {
-      return ok('')
+      const category = (req.body?.category || req.query?.category || '').toString()
+      const res = await dbExec(`select title from hd_kb_category where name=$1`, [category])
+      return ok(res.rows[0]?.title || '')
     }
     case 'helpdesk.api.knowledge_base.get_category_articles': {
-      return ok([])
+      const category = (req.body?.category || req.query?.category || '').toString()
+      const res = await dbExec(
+        `select name, title, status,
+                to_char(modified at time zone 'utc','YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') as modified
+         from hd_kb_article
+         where category=$1 and status='Published'
+         order by modified desc`,
+        [category]
+      )
+      return ok(res.rows)
     }
     case 'helpdesk.api.knowledge_base.get_article': {
-      return ok(null)
+      const name = (req.body?.name || req.query?.name || '').toString()
+      const res = await dbExec(
+        `select name, title, content, status, category, feedback,
+                to_char(modified at time zone 'utc','YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') as modified,
+                owner
+         from hd_kb_article where name=$1`,
+        [name]
+      )
+      const row = res.rows[0]
+      if (!row) return ok(null)
+      return ok({
+        name: row.name,
+        title: row.title,
+        content: row.content,
+        status: row.status,
+        category: row.category,
+        modified: row.modified,
+        feedback: undefined,
+        author: { name: row.owner, image: null },
+      })
     }
     case 'helpdesk.api.article.search': {
-      return ok([])
+      const q = (req.body?.query || req.query?.query || '').toString().trim()
+      if (!q) return ok([])
+      const res = await dbExec(
+        `select name, title
+         from hd_kb_article
+         where status='Published' and (title ilike $1 or content ilike $1)
+         order by modified desc
+         limit 10`,
+        [`%${q}%`]
+      )
+      return ok(res.rows)
+    }
+    case 'helpdesk.api.knowledge_base.create_category': {
+      const title = (req.body?.title || req.query?.title || '').toString().trim()
+      if (!title) return ok({ name: null })
+      const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+      const name = slug || `cat-${Date.now()}`
+      const session = parseSession(req)
+      const user = session?.user_id || 'system'
+      await dbExec(
+        `insert into hd_kb_category (name, title, is_general, owner, modified_by)
+         values ($1,$2,0,$3,$3)
+         on conflict (name) do update set title=excluded.title, modified=now(), modified_by=$3`,
+        [name, title, user]
+      )
+      return ok({ name })
+    }
+    case 'helpdesk.api.knowledge_base.increment_views': {
+      const article = (req.body?.article || req.query?.article || '').toString()
+      await dbExec(`update hd_kb_article set views=views+1, modified=modified where name=$1`, [article])
+      return ok(true)
+    }
+    case 'helpdesk.api.knowledge_base.delete_articles': {
+      const articles = req.body?.articles || req.query?.articles
+      const list = Array.isArray(articles) ? articles : []
+      if (!list.length) return ok(true)
+      await dbExec(`delete from hd_kb_article where name = any($1::text[])`, [list])
+      return ok(true)
+    }
+    case 'helpdesk.api.knowledge_base.move_to_category': {
+      const category = (req.body?.category || req.query?.category || '').toString()
+      const articles = req.body?.articles || req.query?.articles
+      const list = Array.isArray(articles) ? articles : []
+      if (!category || !list.length) return ok(true)
+      await dbExec(`update hd_kb_article set category=$1, modified=now() where name = any($2::text[])`, [category, list])
+      return ok(true)
+    }
+    case 'helpdesk.api.knowledge_base.merge_category': {
+      const source = (req.body?.source || req.query?.source || '').toString()
+      const target = (req.body?.target || req.query?.target || '').toString()
+      if (!source || !target || source === target) return ok(true)
+      await dbExec(`update hd_kb_article set category=$1 where category=$2`, [target, source])
+      await dbExec(`delete from hd_kb_category where name=$1 and is_general=0`, [source])
+      return ok(true)
     }
     case 'helpdesk.api.contact.search_contacts': {
       return ok([])

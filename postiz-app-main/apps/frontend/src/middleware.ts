@@ -23,6 +23,10 @@ export async function middleware(request: NextRequest) {
     request.cookies.get('auth') ||
     request.headers.get('auth') ||
     nextUrl.searchParams.get('loggedAuth');
+  const influencecoreSsoEnabled =
+    process.env.INFLUENCECORE_DISABLE_PUBLIC_AUTH === 'true';
+  const influencecoreBootstrapPath =
+    process.env.INFLUENCECORE_SSO_BOOTSTRAP_PATH || '/api/postiz/session';
   const lng = request.cookies.has(cookieName)
     ? acceptLanguage.get(request.cookies.get(cookieName).value)
     : acceptLanguage.get(
@@ -47,10 +51,20 @@ export async function middleware(request: NextRequest) {
   ) {
     return topResponse;
   }
+
+  // Mode SSO piloté par InfluenceCore : si pas de cookie Postiz, on rebondit vers le bootstrap
+  // qui va poser les cookies (auth/showorg), puis renvoyer l’utilisateur sur /social.
+  if (influencecoreSsoEnabled && !authCookie) {
+    const nextPath = `${basePath}${pathname}${nextUrl.search || ''}`;
+    const u = new URL(influencecoreBootstrapPath, nextUrl.origin);
+    u.searchParams.set('next', nextPath);
+    return NextResponse.redirect(u);
+  }
+
   // If the URL is logout, delete the cookie and redirect to login
   if (nextUrl.href.indexOf('/auth/logout') > -1) {
     const response = NextResponse.redirect(
-      new URL('/auth/login', nextUrl.href)
+      new URL(`${basePath}/auth/login`, nextUrl.href)
     );
     response.cookies.set('auth', '', {
       path: '/',
@@ -82,17 +96,17 @@ export async function middleware(request: NextRequest) {
           : findIndex
         ).toUpperCase()}`;
     return NextResponse.redirect(
-      new URL(`/auth${url}${additional}`, nextUrl.href)
+      new URL(`${basePath}/auth${url}${additional}`, nextUrl.href)
     );
   }
 
   // If the url is /auth and the cookie exists, redirect to /
   if (nextUrl.href.indexOf('/auth') > -1 && authCookie) {
-    return NextResponse.redirect(new URL(`/${url}`, nextUrl.href));
+    return NextResponse.redirect(new URL(`${basePath}/${url}`, nextUrl.href));
   }
   if (nextUrl.href.indexOf('/auth') > -1 && !authCookie) {
     if (org) {
-      const redirect = NextResponse.redirect(new URL(`/`, nextUrl.href));
+      const redirect = NextResponse.redirect(new URL(`${basePath}/`, nextUrl.href));
       redirect.cookies.set('org', org, {
         ...(!process.env.NOT_SECURED
           ? {
@@ -120,7 +134,7 @@ export async function middleware(request: NextRequest) {
         })
       ).json();
       const redirect = NextResponse.redirect(
-        new URL(`/?added=true`, nextUrl.href)
+        new URL(`${basePath}/?added=true`, nextUrl.href)
       );
       if (id) {
         redirect.cookies.set('showorg', id, {
@@ -141,7 +155,7 @@ export async function middleware(request: NextRequest) {
     if (nextUrl.pathname === '/') {
       return NextResponse.redirect(
         new URL(
-          !!process.env.IS_GENERAL ? '/launches' : `/analytics`,
+          `${basePath}${!!process.env.IS_GENERAL ? '/launches' : `/analytics`}`,
           nextUrl.href
         )
       );
@@ -150,7 +164,7 @@ export async function middleware(request: NextRequest) {
     return topResponse;
   } catch (err) {
     console.log('err', err);
-    return NextResponse.redirect(new URL('/auth/logout', nextUrl.href));
+    return NextResponse.redirect(new URL(`${basePath}/auth/logout`, nextUrl.href));
   }
 }
 

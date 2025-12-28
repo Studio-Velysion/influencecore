@@ -22,13 +22,18 @@ import { RealIP } from 'nestjs-real-ip';
 import { UserAgent } from '@gitroom/nestjs-libraries/user/user.agent';
 import { Provider } from '@prisma/client';
 import * as Sentry from '@sentry/nestjs';
+import { UsersService } from '@gitroom/nestjs-libraries/database/prisma/users/users.service';
+import { OrganizationService } from '@gitroom/nestjs-libraries/database/prisma/organizations/organization.service';
+import { AuthService as AuthChecker } from '@gitroom/helpers/auth/auth.service';
 
 @ApiTags('Auth')
 @Controller('/auth')
 export class AuthController {
   constructor(
     private _authService: AuthService,
-    private _emailService: EmailService
+    private _emailService: EmailService,
+    private _usersService: UsersService,
+    private _organizationService: OrganizationService
   ) {}
 
   private isInfluenceCoreInternal(req: Request) {
@@ -187,6 +192,65 @@ export class AuthController {
     } catch (e: any) {
       response.status(400).send(e.message);
     }
+  }
+
+  /**
+   * InfluenceCore SSO bridge:
+   * - Called server-to-server by InfluenceCore (must include x-influencecore-internal-key).
+   * - Ensures a Postiz user exists (auto-provision), then returns a Postiz JWT + orgId.
+   * - InfluenceCore will set browser cookies `auth` + `showorg` and redirect the user to /social.
+   */
+  @Post('/influencecore/session')
+  async influencecoreSession(
+    @Req() req: Request,
+    @Body() body: { email?: string; company?: string },
+    @Res({ passthrough: false }) response: Response,
+    @RealIP() ip: string,
+    @UserAgent() userAgent: string
+  ) {
+    if (!this.isInfluenceCoreInternal(req)) {
+      return response.status(403).send('Forbidden');
+    }
+
+    const emailFromHeader = req.headers['x-influencecore-user-email'];
+    const email =
+      (body?.email && String(body.email).trim()) ||
+      (typeof emailFromHeader === 'string' ? emailFromHeader.trim() : '');
+    if (!email) {
+      return response.status(400).send('Missing email');
+    }
+
+    let user = await this._usersService.getUserByEmail(email);
+    if (!user) {
+      // Provider.GENERIC => activated = true (see OrganizationRepository.createOrgAndUser)
+      const company = body?.company?.trim() || 'InfluenceCore';
+      const create = await this._organizationService.createOrgAndUser(
+        {
+          company,
+          email,
+          password: '',
+          provider: Provider.GENERIC,
+          providerId: `influencecore:${email}`,
+        } as any,
+        ip,
+        userAgent
+      );
+      user = create.users[0].user as any;
+    }
+
+    if (!user.activated) {
+      await this._usersService.activateUser(user.id);
+      user = (await this._usersService.getUserById(user.id)) as any;
+    }
+
+    const orgs = await this._organizationService.getOrgsByUserId(user.id);
+    const orgId = orgs?.[0]?.id;
+    if (!orgId) {
+      return response.status(400).send('User has no organization');
+    }
+
+    const jwt = AuthChecker.signJWT(user);
+    return response.status(200).json({ jwt, orgId, userId: user.id });
   }
 
   @Post('/forgot')

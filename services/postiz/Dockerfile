@@ -8,6 +8,10 @@ ENV POSTIZ_BASE_PATH=/social
 ENV FRONTEND_URL=http://host.docker.internal/social
 ENV NEXT_PUBLIC_BACKEND_URL=http://host.docker.internal/social/api
 ENV STORAGE_PROVIDER=cloudflare
+#
+# InfluenceCore SSO (désactive le login/register Postiz, et force le bootstrap cookies via InfluenceCore)
+ENV INFLUENCECORE_DISABLE_PUBLIC_AUTH=true
+ENV INFLUENCECORE_SSO_BOOTSTRAP_PATH=/api/postiz/session
 
 COPY postiz-app-main/package.json postiz-app-main/pnpm-lock.yaml postiz-app-main/pnpm-workspace.yaml ./postiz-app-main/
 COPY postiz-app-main/apps/backend/package.json ./postiz-app-main/apps/backend/package.json

@@ -183,6 +183,8 @@ services:
       NODE_ENV: production
       PORT: "4200"
       POSTIZ_BASE_PATH: "/social"
+      INFLUENCECORE_DISABLE_PUBLIC_AUTH: "true"
+      INFLUENCECORE_SSO_BOOTSTRAP_PATH: "/api/postiz/session"
       STORAGE_PROVIDER: ${POSTIZ_STORAGE_PROVIDER:-cloudflare}
       FRONTEND_URL: ${POSTIZ_FRONTEND_URL:-http://host.docker.internal/social}
       NEXT_PUBLIC_BACKEND_URL: ${POSTIZ_BACKEND_PUBLIC_URL:-http://host.docker.internal/social/api}
@@ -252,6 +254,7 @@ services:
       DB_NAME: fossbilling
       DB_USER: ${POSTGRES_USER}
       DB_PASS: ${POSTGRES_PASSWORD}
+      INFLUENCECORE_INTERNAL_KEY: ${INFLUENCECORE_INTERNAL_KEY}
     networks:
       - influencecore-network
     labels:

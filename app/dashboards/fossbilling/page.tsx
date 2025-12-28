@@ -2,16 +2,15 @@ import { getServerSessionWithTest } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import ClientLayout from '@/components/client/layout/ClientLayout'
 import AdminLayoutChakra from '@/components/admin/layout/AdminLayoutChakra'
-import ExternalIframe from '@/components/integrations/ExternalIframe'
+import ServiceDashboardClient from '@/components/dashboards/ServiceDashboardClient'
 
-export default async function FossbillingIntegrationPage() {
+export default async function FossbillingDashboardPage() {
   const session = await getServerSessionWithTest()
   if (!session) redirect('/login')
 
   const isAdmin = session?.user?.isAdmin || false
   const Layout = isAdmin ? AdminLayoutChakra : ClientLayout
 
-  // On passe toujours par le bootstrap SSO InfluenceCore -> FOSSBilling (pose la session PHP puis redirect)
   const target = process.env.NEXT_PUBLIC_FOSSBILLING_DASHBOARD_URL || ''
   const nextPath = (() => {
     if (!target) return '/billing'
@@ -26,7 +25,15 @@ export default async function FossbillingIntegrationPage() {
 
   return (
     <Layout>
-      <ExternalIframe title="FOSSBilling" src={src} />
+      <ServiceDashboardClient
+        title="FOSSBilling"
+        description="Facturation & abonnements. Vue abonnements côté InfluenceCore + accès au back-office FOSSBilling."
+        src={src}
+        actions={[
+          { label: 'Mes abonnements', href: '/subscriptions', variant: 'solid', colorScheme: 'orange' },
+          { label: 'Ouvrir en plein écran', href: '/integrations/fossbilling', variant: 'outline', colorScheme: 'orange' },
+        ]}
+      />
     </Layout>
   )
 }

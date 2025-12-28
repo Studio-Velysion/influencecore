@@ -51,6 +51,97 @@ if (!empty($_GET['restore_session'])) {
 $di['session'];
 $debugBar['time']->stopMeasure('session_start');
 
+// InfluenceCore SSO bootstrap (pose une session PHP FOSSBilling, puis redirige vers /billing)
+if (isset($_GET['_url']) && $_GET['_url'] === '/sso/influencecore') {
+    $secret = getenv('INFLUENCECORE_INTERNAL_KEY') ?: '';
+    $token = $_GET['token'] ?? '';
+    $next = $_GET['next'] ?? ADMIN_PREFIX . '/';
+
+    $safeNext = is_string($next) && str_starts_with($next, '/') ? $next : (ADMIN_PREFIX . '/');
+
+    $deny = function (string $msg) {
+        http_response_code(403);
+        echo $msg;
+        exit;
+    };
+
+    if (!$secret) {
+        $deny('INFLUENCECORE_INTERNAL_KEY manquant');
+    }
+    if (!is_string($token) || !$token || strpos($token, '.') === false) {
+        $deny('Token manquant');
+    }
+
+    [$bodyB64, $sigB64] = explode('.', $token, 2);
+    $calc = hash_hmac('sha256', $bodyB64, $secret, true);
+    $calcB64 = rtrim(strtr(base64_encode($calc), '+/', '-_'), '=');
+    if (!hash_equals($calcB64, $sigB64)) {
+        $deny('Signature invalide');
+    }
+
+    $json = base64_decode(strtr($bodyB64, '-_', '+/'));
+    $payload = json_decode($json ?: '', true);
+    if (!is_array($payload)) {
+        $deny('Payload invalide');
+    }
+
+    $now = time();
+    $exp = isset($payload['exp']) ? (int) $payload['exp'] : 0;
+    if (!$exp || $exp < $now) {
+        $deny('Token expiré');
+    }
+
+    $email = strtolower(trim((string) ($payload['email'] ?? '')));
+    $name = trim((string) ($payload['name'] ?? 'InfluenceCore'));
+    $roles = $payload['roles'] ?? [];
+    $roles = is_array($roles) ? array_map('strval', $roles) : [];
+
+    if (!$email) {
+        $deny('Email manquant');
+    }
+
+    // Règle simple : si Keycloak donne "admin" ou "billing", on connecte en staff/admin FOSSBilling.
+    $isAdmin = in_array('admin', $roles, true) || in_array('influencecore-admin', $roles, true);
+    $isStaff = $isAdmin || in_array('billing', $roles, true) || in_array('staff', $roles, true);
+    if (!$isStaff) {
+        $deny('Accès refusé (rôles insuffisants)');
+    }
+
+    // Provisioning admin/staff minimal
+    /** @var \RedBeanPHP\OODBBean|\Model_Admin|null $admin */
+    $admin = $di['db']->findOne('Admin', 'email = ?', [$email]);
+    if (!$admin instanceof \Model_Admin) {
+        $admin = $di['db']->dispense('Admin');
+        $admin->admin_group_id = 1;
+        $admin->email = $email;
+        $admin->name = $name ?: 'InfluenceCore';
+        $admin->role = $isAdmin ? \Model_Admin::ROLE_ADMIN : \Model_Admin::ROLE_STAFF;
+        $admin->status = \Model_Admin::STATUS_ACTIVE;
+        $admin->pass = $di['password']->hashIt(bin2hex(random_bytes(16)));
+        $admin->created_at = date('Y-m-d H:i:s');
+        $admin->updated_at = date('Y-m-d H:i:s');
+        $di['db']->store($admin);
+    } else {
+        // Sync role minimal
+        $admin->role = $isAdmin ? \Model_Admin::ROLE_ADMIN : \Model_Admin::ROLE_STAFF;
+        $admin->status = \Model_Admin::STATUS_ACTIVE;
+        $admin->name = $name ?: $admin->name;
+        $admin->updated_at = date('Y-m-d H:i:s');
+        $di['db']->store($admin);
+    }
+
+    session_regenerate_id();
+    $di['session']->set('admin', [
+        'id' => $admin->id,
+        'email' => $admin->email,
+        'name' => $admin->name,
+        'role' => $admin->role,
+    ]);
+
+    header("Location: {$safeNext}");
+    exit;
+}
+
 if (strncasecmp($url, ADMIN_PREFIX, strlen(ADMIN_PREFIX)) === 0) {
     define('ADMIN_AREA', true);
     $appUrl = str_replace(ADMIN_PREFIX, '', preg_replace('/\?.+/', '', $url));

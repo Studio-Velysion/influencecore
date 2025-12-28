@@ -5,6 +5,11 @@
   "loginTheme": "velysion",
   "roles": {
     "realm": [
+      { "name": "admin", "description": "Administrateur global (SSO)" },
+      { "name": "staff", "description": "Staff global (SSO)" },
+      { "name": "support", "description": "Support global (SSO)" },
+      { "name": "billing", "description": "Billing global (SSO)" },
+      { "name": "user", "description": "Utilisateur global (SSO)" },
       { "name": "influencecore-admin", "description": "Administrateur InfluenceCore" }
     ]
   },
@@ -15,11 +20,91 @@
       "enabled": true,
       "protocol": "openid-connect",
       "publicClient": false,
-      "secret": "CHANGE_THIS_SECRET",
-      "redirectUris": ["http://localhost:3000/*"],
-      "webOrigins": ["http://localhost:3000"],
+      "secret": "change-me",
+      "redirectUris": [
+        "http://host.docker.internal/api/auth/callback/keycloak",
+        "http://localhost/api/auth/callback/keycloak",
+        "http://localhost:3000/api/auth/callback/keycloak"
+      ],
+      "webOrigins": [
+        "http://host.docker.internal",
+        "http://localhost",
+        "http://localhost:3000"
+      ],
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true
+    },
+    {
+      "clientId": "helpdesk-client",
+      "name": "Helpdesk (fork)",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "change-me",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://host.docker.internal/helpdesk/oauth/callback",
+        "http://localhost/helpdesk/oauth/callback"
+      ],
+      "webOrigins": [
+        "http://host.docker.internal",
+        "http://localhost"
+      ]
+    },
+    {
+      "clientId": "postiz-client",
+      "name": "Postiz",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "change-me",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://host.docker.internal/social/*",
+        "http://localhost/social/*"
+      ],
+      "webOrigins": [
+        "http://host.docker.internal",
+        "http://localhost"
+      ]
+    },
+    {
+      "clientId": "fossbilling-client",
+      "name": "FOSSBilling",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "change-me",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://host.docker.internal/billing/*",
+        "http://localhost/billing/*"
+      ],
+      "webOrigins": [
+        "http://host.docker.internal",
+        "http://localhost"
+      ]
+    },
+    {
+      "clientId": "grapesjs-client",
+      "name": "GrapesJS",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "change-me",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [
+        "http://host.docker.internal/editor/*",
+        "http://localhost/editor/*"
+      ],
+      "webOrigins": [
+        "http://host.docker.internal",
+        "http://localhost"
+      ]
     }
   ]
 }

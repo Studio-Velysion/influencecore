@@ -121,7 +121,9 @@ return [
         /*
          * Database type. Don't change this if in doubt.
          */
-        'type' => 'mysql',
+        // Fork InfluenceCore: support PostgreSQL (pdo_pgsql) too.
+        // Values expected: 'mysql' or 'pgsql'
+        'type' => getenv('DB_TYPE') ?: 'mysql',
 
         /*
          * Database hostname. Don't change this if in doubt.
@@ -146,7 +148,8 @@ return [
         /*
          * Database Port.
          */
-        'port' => getenv('DB_PORT') ?: '3306',
+        // Default ports: 3306 (MySQL/MariaDB), 5432 (PostgreSQL)
+        'port' => getenv('DB_PORT') ?: ((getenv('DB_TYPE') ?: 'mysql') === 'pgsql' ? '5432' : '3306'),
     ],
 
     'twig' => [

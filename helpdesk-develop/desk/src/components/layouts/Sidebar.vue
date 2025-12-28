@@ -496,7 +496,7 @@ const steps = [
       currentStep.value = {
         title: "Create & invite a contact",
         buttonLabel: "Create",
-        videoURL: "/assets/helpdesk/desk/videos/createInviteContact.mp4",
+        videoURL: "/helpdesk/videos/createInviteContact.mp4",
         onClick: async () => {
           showIntermediateModal.value = false;
           router.push({ name: "ContactList" });

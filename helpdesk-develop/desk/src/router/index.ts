@@ -5,7 +5,7 @@ import { isCustomerPortal } from "@/utils";
 import { createRouter, createWebHistory } from "vue-router";
 const { isMobileView } = useScreenSize();
 
-export const LOGIN_PAGE = "/login";
+export const LOGIN_PAGE = "/helpdesk/login";
 
 // type the meta fields
 declare module "vue-router" {

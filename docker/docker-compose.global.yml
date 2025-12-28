@@ -1,0 +1,272 @@
+version: "3.8"
+
+services:
+  traefik:
+    image: traefik:v3.2
+    container_name: influencecore-traefik
+    restart: always
+    command:
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8088:8080" # dashboard traefik (dev)
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - influencecore-network
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: influencecore-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-influencecore}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - influencecore-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-influencecore}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  postiz-redis:
+    image: redis:7-alpine
+    container_name: influencecore-postiz-redis
+    restart: always
+    networks:
+      - influencecore-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.6
+    container_name: influencecore-keycloak
+    restart: always
+    command: start-dev --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: "jdbc:postgresql://postgres:5432/keycloak"
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HTTP_ENABLED: "true"
+      KC_HOSTNAME_STRICT: "false"
+      KC_PROXY: edge
+      KC_HTTP_RELATIVE_PATH: "/auth"
+      # Sans domaine: Keycloak doit émettre un issuer utilisable depuis l'hôte ET depuis les containers
+      KC_HOSTNAME: "host.docker.internal"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - influencecore-network
+    volumes:
+      - ./keycloak/realm:/opt/keycloak/data/import:ro
+      - ./keycloak/themes:/opt/keycloak/themes:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.keycloak.rule=PathPrefix(`/auth`)
+      - traefik.http.routers.keycloak.entrypoints=web
+      - traefik.http.services.keycloak.loadbalancer.server.port=8080
+
+  influencecore:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    container_name: influencecore-app
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PORT: "3000"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-influencecore}?schema=public"
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER:-http://keycloak:8080/auth/realms/influencecore}
+      KEYCLOAK_CLIENT_ID: ${KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${KEYCLOAK_CLIENT_SECRET}
+      POSTIZ_BACKEND_URL: ${POSTIZ_BACKEND_URL}
+      INFLUENCECORE_INTERNAL_KEY: ${INFLUENCECORE_INTERNAL_KEY}
+      INITIAL_ADMIN_EMAIL: ${INITIAL_ADMIN_EMAIL}
+      INITIAL_ADMIN_PASSWORD: ${INITIAL_ADMIN_PASSWORD}
+      INITIAL_ADMIN_NAME: ${INITIAL_ADMIN_NAME}
+      INITIAL_ADMIN_PSEUDO: ${INITIAL_ADMIN_PSEUDO}
+      INITIAL_ADMIN_SELF_DELETE: "true"
+      NEXT_PUBLIC_HELPDESK_DASHBOARD_URL: ${NEXT_PUBLIC_HELPDESK_DASHBOARD_URL}
+      NEXT_PUBLIC_FOSSBILLING_DASHBOARD_URL: ${NEXT_PUBLIC_FOSSBILLING_DASHBOARD_URL}
+      NEXT_PUBLIC_KEYCLOAK_ADMIN_URL: ${NEXT_PUBLIC_KEYCLOAK_ADMIN_URL}
+      NEXT_PUBLIC_POSTIZ_DASHBOARD_URL: ${NEXT_PUBLIC_POSTIZ_DASHBOARD_URL}
+    networks:
+      - influencecore-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.influencecore.rule=PathPrefix(`/`) && !PathPrefix(`/auth`) && !PathPrefix(`/helpdesk`) && !PathPrefix(`/billing`) && !PathPrefix(`/social`) && !PathPrefix(`/api/method`)
+      - traefik.http.routers.influencecore.entrypoints=web
+      - traefik.http.services.influencecore.loadbalancer.server.port=3000
+
+  helpdesk:
+    build:
+      context: ..
+      dockerfile: services/helpdesk/Dockerfile
+    container_name: influencecore-helpdesk
+    restart: always
+    environment:
+      PORT: "8000"
+      KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER:-http://keycloak:8080/auth/realms/influencecore}
+      KEYCLOAK_CLIENT_ID: ${HELPDESK_KEYCLOAK_CLIENT_ID}
+      KEYCLOAK_CLIENT_SECRET: ${HELPDESK_KEYCLOAK_CLIENT_SECRET}
+      HELPDESK_PUBLIC_URL: ${HELPDESK_PUBLIC_URL}
+      HELPDESK_BRAND_NAME: ${HELPDESK_BRAND_NAME:-Helpdesk}
+    networks:
+      - influencecore-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.helpdesk.rule=PathPrefix(`/helpdesk`) || PathPrefix(`/api/method`)
+      - traefik.http.routers.helpdesk.entrypoints=web
+      - traefik.http.services.helpdesk.loadbalancer.server.port=8000
+
+  postiz-backend:
+    build:
+      context: ..
+      dockerfile: services/postiz/Dockerfile
+    container_name: influencecore-postiz-backend
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      postiz-redis:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/postiz?schema=public"
+      REDIS_URL: "redis://postiz-redis:6379"
+      FRONTEND_URL: ${POSTIZ_FRONTEND_URL:-http://host.docker.internal/social}
+      NEXT_PUBLIC_BACKEND_URL: ${POSTIZ_BACKEND_PUBLIC_URL:-http://host.docker.internal/social/api}
+      JWT_SECRET: ${POSTIZ_JWT_SECRET}
+      NOT_SECURED: ${POSTIZ_NOT_SECURED:-true}
+      INFLUENCECORE_INTERNAL_KEY: ${INFLUENCECORE_INTERNAL_KEY}
+      INFLUENCECORE_DISABLE_PUBLIC_AUTH: "true"
+    command: ["node","--experimental-require-module","./apps/backend/dist/apps/backend/src/main.js"]
+    networks:
+      - influencecore-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.postiz-api.rule=PathPrefix(`/social/api`)
+      - traefik.http.routers.postiz-api.entrypoints=web
+      - traefik.http.routers.postiz-api.priority=100
+      - traefik.http.middlewares.postiz-api-stripprefix.stripprefix.prefixes=/social
+      - traefik.http.routers.postiz-api.middlewares=postiz-api-stripprefix
+      - traefik.http.services.postiz-api.loadbalancer.server.port=3000
+
+  postiz-frontend:
+    build:
+      context: ..
+      dockerfile: services/postiz/Dockerfile
+    container_name: influencecore-postiz-frontend
+    restart: always
+    depends_on:
+      postiz-backend:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      PORT: "4200"
+      POSTIZ_BASE_PATH: "/social"
+      STORAGE_PROVIDER: ${POSTIZ_STORAGE_PROVIDER:-cloudflare}
+      FRONTEND_URL: ${POSTIZ_FRONTEND_URL:-http://host.docker.internal/social}
+      NEXT_PUBLIC_BACKEND_URL: ${POSTIZ_BACKEND_PUBLIC_URL:-http://host.docker.internal/social/api}
+      NOT_SECURED: ${POSTIZ_NOT_SECURED:-true}
+    command: ["sh","-lc","cd apps/frontend && node ../../node_modules/next/dist/bin/next start -p 4200"]
+    networks:
+      - influencecore-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.postiz.rule=PathPrefix(`/social`)
+      - traefik.http.routers.postiz.entrypoints=web
+      - traefik.http.routers.postiz.priority=50
+      - traefik.http.services.postiz.loadbalancer.server.port=4200
+
+  postiz-workers:
+    build:
+      context: ..
+      dockerfile: services/postiz/Dockerfile
+    container_name: influencecore-postiz-workers
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      postiz-redis:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/postiz?schema=public"
+      REDIS_URL: "redis://postiz-redis:6379"
+      JWT_SECRET: ${POSTIZ_JWT_SECRET}
+      NOT_SECURED: ${POSTIZ_NOT_SECURED:-true}
+    command: ["node","--experimental-require-module","./apps/workers/dist/apps/workers/src/main.js"]
+    networks:
+      - influencecore-network
+
+  postiz-cron:
+    build:
+      context: ..
+      dockerfile: services/postiz/Dockerfile
+    container_name: influencecore-postiz-cron
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      postiz-redis:
+        condition: service_started
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/postiz?schema=public"
+      REDIS_URL: "redis://postiz-redis:6379"
+      JWT_SECRET: ${POSTIZ_JWT_SECRET}
+      NOT_SECURED: ${POSTIZ_NOT_SECURED:-true}
+    command: ["node","--experimental-require-module","./apps/cron/dist/apps/cron/src/main.js"]
+    networks:
+      - influencecore-network
+
+  fossbilling:
+    build:
+      context: ../FOSSBilling
+      dockerfile: Dockerfile
+    container_name: influencecore-fossbilling
+    restart: always
+    environment:
+      DB_TYPE: "pgsql"
+      DB_HOST: postgres
+      DB_PORT: "5432"
+      DB_NAME: fossbilling
+      DB_USER: ${POSTGRES_USER}
+      DB_PASS: ${POSTGRES_PASSWORD}
+    networks:
+      - influencecore-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.fossbilling.rule=PathPrefix(`/billing`)
+      - traefik.http.routers.fossbilling.entrypoints=web
+      - traefik.http.middlewares.fossbilling-stripprefix.stripprefix.prefixes=/billing
+      - traefik.http.routers.fossbilling.middlewares=fossbilling-stripprefix
+      - traefik.http.services.fossbilling.loadbalancer.server.port=80
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  influencecore-network:
+    driver: bridge
+
+

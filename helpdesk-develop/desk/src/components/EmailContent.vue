@@ -29,12 +29,12 @@ const cssHref = computed(() => {
   const links = document.querySelectorAll('link[rel="stylesheet"]');
   for (const link of links) {
     const href = link.getAttribute("href");
-    if (href?.includes("/assets/helpdesk/desk/") && href.endsWith(".css")) {
+    if (href?.includes("/helpdesk/") && href.endsWith(".css")) {
       return href;
     }
   }
   // Fallback to a reasonable path
-  return "/assets/helpdesk/desk/index.css";
+  return "/helpdesk/assets/index.css";
 });
 
 const parser = new DOMParser();

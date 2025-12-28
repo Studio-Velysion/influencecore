@@ -6,15 +6,18 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
+  // The desk UI is served behind the unified reverse-proxy under /helpdesk
+  base: "/helpdesk/",
   plugins: [
     frappeui({
-      frappeProxy: true,
+      // Fork InfluenceCore: we don't rely on a Frappe backend anymore
+      frappeProxy: false,
       lucideIcons: true,
       jinjaBootData: true,
       buildConfig: {
-        outDir: `../helpdesk/public/desk`,
+        outDir: `dist`,
         emptyOutDir: true,
-        indexHtmlPath: "../helpdesk/www/helpdesk/index.html",
+        indexHtmlPath: "index.html",
       },
       frappeTypes: {
         input: {
@@ -43,25 +46,25 @@ export default defineConfig({
           "Modern, Streamlined, Free and Open Source Customer Service Software",
         icons: [
           {
-            src: "/assets/helpdesk/desk/manifest/manifest-icon-192.maskable.png",
+            src: "/helpdesk/manifest/manifest-icon-192.maskable.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/assets/helpdesk/desk/manifest/manifest-icon-192.maskable.png",
+            src: "/helpdesk/manifest/manifest-icon-192.maskable.png",
             sizes: "192x192",
             type: "image/png",
             purpose: "maskable",
           },
           {
-            src: "/assets/helpdesk/desk/manifest/manifest-icon-512.maskable.png",
+            src: "/helpdesk/manifest/manifest-icon-512.maskable.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "any",
           },
           {
-            src: "/assets/helpdesk/desk/manifest/manifest-icon-512.maskable.png",
+            src: "/helpdesk/manifest/manifest-icon-512.maskable.png",
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",

@@ -14,6 +14,11 @@ acceptLanguage.languages(languages);
 // This function can be marked `async` if using `await` inside
 export async function middleware(request: NextRequest) {
   const nextUrl = request.nextUrl;
+  // Support running Postiz under a basePath (eg. /social)
+  const basePath = process.env.POSTIZ_BASE_PATH || '';
+  const pathname = basePath && nextUrl.pathname.startsWith(basePath)
+    ? nextUrl.pathname.slice(basePath.length) || '/'
+    : nextUrl.pathname;
   const authCookie =
     request.cookies.get('auth') ||
     request.headers.get('auth') ||
@@ -31,14 +36,14 @@ export async function middleware(request: NextRequest) {
     topResponse.headers.set(cookieName, lng);
   }
 
-  if (nextUrl.pathname.startsWith('/modal/') && !authCookie) {
+  if (pathname.startsWith('/modal/') && !authCookie) {
     return NextResponse.redirect(new URL(`/auth/login-required`, nextUrl.href));
   }
 
   if (
-    nextUrl.pathname.startsWith('/uploads/') ||
-    nextUrl.pathname.startsWith('/p/') ||
-    nextUrl.pathname.startsWith('/icons/')
+    pathname.startsWith('/uploads/') ||
+    pathname.startsWith('/p/') ||
+    pathname.startsWith('/icons/')
   ) {
     return topResponse;
   }

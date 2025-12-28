@@ -30,7 +30,14 @@ async function start() {
         ...(process.env.NOT_SECURED ? ['auth', 'showorg', 'impersonate'] : []),
       ],
       origin: [
-        process.env.FRONTEND_URL,
+        // Allow passing FRONTEND_URL with a basePath (eg. http://host.docker.internal/social)
+        (() => {
+          try {
+            return process.env.FRONTEND_URL ? new URL(process.env.FRONTEND_URL).origin : undefined
+          } catch {
+            return process.env.FRONTEND_URL
+          }
+        })(),
         'http://localhost:6274',
         ...(process.env.MAIN_URL ? [process.env.MAIN_URL] : []),
       ],

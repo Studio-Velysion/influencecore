@@ -275,8 +275,19 @@ final class FOSSBilling_Installer
      */
     private function connectDatabase(): void
     {
-        // Open the connection
-        $this->pdo = new PDO('mysql:host=' . $this->session->get('database_hostname') . ';' . $this->session->get('database_port'),
+        // Fork InfluenceCore: support PostgreSQL installer mode (DB must already exist).
+        $dbType = getenv('DB_TYPE') ?: 'pgsql';
+        $host = $this->session->get('database_hostname');
+        $port = $this->session->get('database_port');
+        $dbName = $this->session->get('database_name');
+
+        $dsn = match ($dbType) {
+            'pgsql' => "pgsql:host={$host};port={$port};dbname={$dbName}",
+            default => "mysql:host={$host};port={$port};dbname={$dbName}",
+        };
+
+        $this->pdo = new PDO(
+            $dsn,
             $this->session->get('database_username'),
             $this->session->get('database_password'),
             [
@@ -285,24 +296,19 @@ final class FOSSBilling_Installer
             ]
         );
 
-        // Set required MySQL environment settings
-        $this->pdo->exec('SET NAMES "utf8"');
-        $this->pdo->exec('SET CHARACTER SET utf8');
-        $this->pdo->exec('SET CHARACTER_SET_CONNECTION = utf8');
-        $this->pdo->exec('SET character_set_results = utf8');
-        $this->pdo->exec('SET character_set_server = utf8');
-        $this->pdo->exec('SET SESSION interactive_timeout = 28800');
-        $this->pdo->exec('SET SESSION wait_timeout = 28800');
-
-        // Attempt to create the database.
-        try {
-            $this->pdo->exec('CREATE DATABASE `' . $this->session->get('database_name') . '` CHARACTER SET utf8 COLLATE utf8_general_ci;');
-        } catch (PDOException) {
-            // Silently fail if the database already exists.
+        if ($dbType === 'mysql') {
+            // Set required MySQL environment settings
+            $this->pdo->exec('SET NAMES "utf8"');
+            $this->pdo->exec('SET CHARACTER SET utf8');
+            $this->pdo->exec('SET CHARACTER_SET_CONNECTION = utf8');
+            $this->pdo->exec('SET character_set_results = utf8');
+            $this->pdo->exec('SET character_set_server = utf8');
+            $this->pdo->exec('SET SESSION interactive_timeout = 28800');
+            $this->pdo->exec('SET SESSION wait_timeout = 28800');
+        } elseif ($dbType === 'pgsql') {
+            // Keep timezone consistent
+            $this->pdo->exec("SET TIME ZONE 'UTC'");
         }
-
-        // Select the database as default for future queries
-        $this->pdo->query('USE `' . $this->session->get('database_name') . '`;');
     }
 
     /**
@@ -358,11 +364,19 @@ final class FOSSBilling_Installer
      */
     private function install(): bool
     {
+        $dbType = getenv('DB_TYPE') ?: 'pgsql';
+
         // Load database structure
         $sql = $this->filesystem->readFile(PATH_SQL);
         $sql_content = $this->filesystem->readFile(PATH_SQL_DATA);
         if (!$sql || !$sql_content) {
             throw new Exception('Could not read structure.sql file');
+        }
+
+        // Fork InfluenceCore: best-effort MySQL dump -> PostgreSQL conversion for the bundled installer.
+        if ($dbType === 'pgsql') {
+            $sql = $this->convertMysqlDumpToPostgres($sql);
+            $sql_content = $this->convertMysqlDumpToPostgres($sql_content);
         }
 
         // Read content, parse queries into an array, then loop and execute each query
@@ -432,6 +446,50 @@ final class FOSSBilling_Installer
     }
 
     /**
+     * Very small, best-effort converter to run the bundled MySQL SQL dump on PostgreSQL.
+     * This is intentionally conservative: it strips MySQL-specific directives, engine options,
+     * and non-critical indexes, while keeping CREATE TABLE / INSERT statements.
+     */
+    private function convertMysqlDumpToPostgres(string $sql): string
+    {
+        // Remove MySQL dump directives/comments (/*! ... */) and LOCK/UNLOCK
+        $sql = preg_replace('/^\\s*\\/\\*!.*?\\*\\/\\s*$/m', '', $sql) ?? $sql;
+        $sql = preg_replace('/^\\s*LOCK TABLES.*?;\\s*$/mi', '', $sql) ?? $sql;
+        $sql = preg_replace('/^\\s*UNLOCK TABLES;\\s*$/mi', '', $sql) ?? $sql;
+        $sql = preg_replace('/^\\s*#.*$/m', '', $sql) ?? $sql;
+        $sql = preg_replace('/^\\s*--.*$/m', '', $sql) ?? $sql;
+
+        // Remove MySQL table options
+        $sql = preg_replace('/\\)\\s*ENGINE=.*?;\\s*/i', ");\n", $sql) ?? $sql;
+
+        // Quotes: backticks are MySQL-only; remove them (Postgres will fold to lower-case)
+        $sql = str_replace('`', '', $sql);
+
+        // Types
+        $sql = preg_replace('/\\bbigint\\(\\d+\\)/i', 'bigint', $sql) ?? $sql;
+        $sql = preg_replace('/\\bint\\(\\d+\\)/i', 'integer', $sql) ?? $sql;
+        $sql = preg_replace('/\\btinyint\\(\\d+\\)/i', 'smallint', $sql) ?? $sql;
+        $sql = preg_replace('/\\bdatetime\\b/i', 'timestamp', $sql) ?? $sql;
+
+        // AUTO_INCREMENT -> identity
+        $sql = preg_replace('/\\bAUTO_INCREMENT\\b/i', 'GENERATED BY DEFAULT AS IDENTITY', $sql) ?? $sql;
+
+        // Remove column/table comments
+        $sql = preg_replace('/\\s+COMMENT\\s+\'[^\']*\'/i', '', $sql) ?? $sql;
+
+        // Strip non-critical secondary indexes (KEY ...) inside CREATE TABLE blocks
+        $sql = preg_replace('/^\\s*KEY\\s+[^\\n]+,?\\s*$/mi', '', $sql) ?? $sql;
+
+        // Convert UNIQUE KEY -> UNIQUE constraint (best effort)
+        $sql = preg_replace('/^\\s*UNIQUE\\s+KEY\\s+\\w+\\s*\\(([^\\)]+)\\)\\s*,?\\s*$/mi', 'UNIQUE ($1)', $sql) ?? $sql;
+
+        // Cleanup: remove duplicate commas before closing paren
+        $sql = preg_replace('/,\\s*\\)/m', "\n)", $sql) ?? $sql;
+
+        return $sql;
+    }
+
+    /**
      * Generate the `config.php` file using the `config-sample.php` as a template.
      */
     private function getConfigOutput(): string
@@ -450,7 +508,7 @@ final class FOSSBilling_Installer
         $data['url'] = str_replace(['https://', 'http://'], '', SYSTEM_URL);
         $data['path_data'] = Path::join(PATH_ROOT, 'data');
         $data['db'] = [
-            'type' => 'mysql',
+            'type' => (getenv('DB_TYPE') ?: 'pgsql'),
             'host' => $this->session->get('database_hostname'),
             'port' => $this->session->get('database_port'),
             'name' => $this->session->get('database_name'),

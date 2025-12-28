@@ -52,9 +52,9 @@ const apps = createResource({
     let _apps = [
       {
         name: "frappe",
-        logo: "/assets/helpdesk/desk/desk.png",
-        title: "Desk",
-        route: "/desk/helpdesk",
+        logo: "/helpdesk/desk.png",
+        title: "Helpdesk",
+        route: "/helpdesk",
       },
     ];
     data.map((app) => {

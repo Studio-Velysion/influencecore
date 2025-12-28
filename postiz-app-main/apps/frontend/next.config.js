@@ -2,7 +2,10 @@
 import { withSentryConfig } from '@sentry/nextjs';
 
 /** @type {import('next').NextConfig} */
+const basePath = process.env.POSTIZ_BASE_PATH || '';
 const nextConfig = {
+  basePath,
+  assetPrefix: basePath || undefined,
   experimental: {
     proxyTimeout: 90_000,
   },

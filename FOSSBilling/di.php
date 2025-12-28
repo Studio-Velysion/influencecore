@@ -79,22 +79,29 @@ $di['crypt'] = function () use ($di) {
 $di['pdo'] = function () {
     $config = Config::getProperty('db');
 
-    $pdo = new PDO(
-        $config['type'] . ':host=' . $config['host'] . ';port=' . $config['port'] . ';dbname=' . $config['name'],
-        $config['user'],
-        $config['password'],
-        [
+    $driver = $config['type'] ?? 'mysql';
+    if ($driver === 'pgsql') {
+        $dsn = 'pgsql:host=' . $config['host'] . ';port=' . $config['port'] . ';dbname=' . $config['name'];
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ];
+    } else {
+        $dsn = $driver . ':host=' . $config['host'] . ';port=' . $config['port'] . ';dbname=' . $config['name'];
+        $options = [
             PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-        ]
-    );
+        ];
+    }
+
+    $pdo = new PDO($dsn, $config['user'], $config['password'], $options);
 
     if (isset($config['debug']) && $config['debug']) {
         $pdo->setAttribute(PDO::ATTR_STATEMENT_CLASS, ['Box_DbLoggedPDOStatement']);
     }
 
-    if ($config['type'] === 'mysql') {
+    if ($driver === 'mysql') {
         $pdo->exec('SET NAMES "utf8"');
         $pdo->exec('SET CHARACTER SET utf8');
         $pdo->exec('SET CHARACTER_SET_CONNECTION = utf8');
@@ -107,6 +114,11 @@ $di['pdo'] = function () {
         $datetime = new DateTime('now');
         $offset = $datetime->format('P');
         $pdo->exec("SET time_zone = '{$offset}'");
+    } elseif ($driver === 'pgsql') {
+        // PostgreSQL: keep connection timezone consistent with PHP runtime
+        $datetime = new DateTime('now');
+        $offset = $datetime->format('P');
+        $pdo->exec("SET TIME ZONE INTERVAL '{$offset}' HOUR TO MINUTE");
     }
 
     return $pdo;

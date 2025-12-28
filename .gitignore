@@ -50,6 +50,8 @@ next-env.d.ts
 # Prisma
 prisma/*.db
 prisma/*.db-journal
+prisma/**/*.db
+prisma/**/*.db-journal
 
 # Keycloak sources (Windows path-length issue)
 # Sur Windows, certains fichiers de tests Keycloak dépassent la limite de chemin lors du staging Git.

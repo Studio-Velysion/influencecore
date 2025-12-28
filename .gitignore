@@ -2,6 +2,7 @@
 logs/
 *.log
 npm-debug.log*
+npm-install.log
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
@@ -52,6 +53,20 @@ prisma/*.db
 prisma/*.db-journal
 prisma/**/*.db
 prisma/**/*.db-journal
+
+# Runtime data (local)
+data/cache/
+data/log/
+data/uploads/
+FOSSBilling/data/cache/
+FOSSBilling/data/log/
+FOSSBilling/data/uploads/
+
+# Backups / temporaires
+*.backup
+*.bak
+*.old
+*.tmp
 
 # Keycloak sources (Windows path-length issue)
 # Sur Windows, certains fichiers de tests Keycloak dépassent la limite de chemin lors du staging Git.

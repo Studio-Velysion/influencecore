@@ -11,7 +11,8 @@
     "@fastify/cookie": "^9.4.0",
     "@fastify/static": "^7.0.4",
     "fastify": "^4.29.1",
-    "openid-client": "^6.6.0"
+    "openid-client": "^6.6.0",
+    "pg": "^8.13.1"
   }
 }
 

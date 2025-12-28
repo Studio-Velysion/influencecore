@@ -122,6 +122,7 @@ services:
     restart: always
     environment:
       PORT: "8000"
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/helpdesk?schema=public"
       KEYCLOAK_ISSUER: ${KEYCLOAK_ISSUER:-http://keycloak:8080/auth/realms/influencecore}
       KEYCLOAK_CLIENT_ID: ${HELPDESK_KEYCLOAK_CLIENT_ID}
       KEYCLOAK_CLIENT_SECRET: ${HELPDESK_KEYCLOAK_CLIENT_SECRET}

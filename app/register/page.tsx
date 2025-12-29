@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import RegisterForm from '@/components/auth/RegisterForm'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import { authOptions } from '@/lib/authOptions'
 import { redirect } from 'next/navigation'
 
 async function RegisterContent() {

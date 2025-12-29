@@ -10,6 +10,7 @@ pipeline {
     booleanParam(name: 'SKIP_LINT', defaultValue: false, description: 'Ignore npm run lint')
     booleanParam(name: 'SKIP_BUILD', defaultValue: false, description: 'Ignore npm run build')
     booleanParam(name: 'TRIGGER_COOLIFY', defaultValue: true, description: 'Déclencher le redeploy Coolify via webhook')
+    booleanParam(name: 'COOLIFY_INSECURE_TLS', defaultValue: false, description: 'Autoriser TLS non valide (self-signed) pour le webhook Coolify')
   }
 
   environment {
@@ -76,10 +77,33 @@ pipeline {
         script {
           echo "Trigger Coolify webhook..."
           if (isUnix()) {
-            sh 'curl -fsSL -X POST "$COOLIFY_WEBHOOK_URL"'
+            sh '''
+              set -e
+              CURL_TLS=""
+              if [ "${COOLIFY_INSECURE_TLS}" = "true" ]; then
+                CURL_TLS="-k"
+              fi
+              # Diagnostic sans leak d'URL: on affiche seulement l'host
+              HOST="$(echo "$COOLIFY_WEBHOOK_URL" | sed -E 's#https?://([^/]+)/?.*#\\1#')"
+              echo "Coolify webhook host: ${HOST}"
+              # Retry pour éviter les flaps réseau
+              curl ${CURL_TLS} -fsSL -X POST \
+                --connect-timeout 10 --max-time 30 \
+                --retry 3 --retry-delay 2 --retry-connrefused \
+                "$COOLIFY_WEBHOOK_URL"
+            '''
           } else {
             // curl est disponible par défaut sur Windows 10+
-            bat 'curl -fsSL -X POST "%COOLIFY_WEBHOOK_URL%"'
+            bat '''
+              @echo off
+              setlocal enabledelayedexpansion
+              set CURL_TLS=
+              if /I "%COOLIFY_INSECURE_TLS%"=="true" set CURL_TLS=-k
+              rem On évite d'afficher l'URL complète (secret). On affiche juste l'host.
+              for /f "tokens=2 delims=/" %%a in ("%COOLIFY_WEBHOOK_URL%") do set HOST=%%a
+              echo Coolify webhook host: %HOST%
+              curl %CURL_TLS% -fsSL -X POST --connect-timeout 10 --max-time 30 --retry 3 --retry-delay 2 --retry-connrefused "%COOLIFY_WEBHOOK_URL%"
+            '''
           }
         }
       }

@@ -2,7 +2,7 @@ import { getServerSessionWithTest } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import ClientLayout from '@/components/client/layout/ClientLayout'
 import AdminLayoutChakra from '@/components/admin/layout/AdminLayoutChakra'
-import ServiceDashboardClient from '@/components/dashboards/ServiceDashboardClient'
+import ExternalIframe from '@/components/integrations/ExternalIframe'
 
 export default async function FossbillingDashboardPage() {
   const session = await getServerSessionWithTest()
@@ -25,15 +25,7 @@ export default async function FossbillingDashboardPage() {
 
   return (
     <Layout>
-      <ServiceDashboardClient
-        title="FOSSBilling"
-        description="Facturation & abonnements. Vue abonnements côté InfluenceCore + accès au back-office FOSSBilling."
-        src={src}
-        actions={[
-          { label: 'Mes abonnements', href: '/subscriptions', variant: 'solid', colorScheme: 'orange' },
-          { label: 'Ouvrir en plein écran', href: '/integrations/fossbilling', variant: 'outline', colorScheme: 'orange' },
-        ]}
-      />
+      <ExternalIframe title="FOSSBilling" src={src} />
     </Layout>
   )
 }

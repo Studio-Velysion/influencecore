@@ -4,6 +4,17 @@ import Link from 'next/link'
 import HomeButton from '@/components/common/HomeButton'
 
 export default async function Home() {
+  // Mode "test" (dev / démo) : on affiche un bandeau d’info si activé.
+  // ⚠️ Doit être défini ici pour éviter l’erreur TypeScript "Cannot find name 'isTestMode'" en build.
+  const isTestMode =
+    process.env.INFLUENCECORE_TEST_MODE === 'true' ||
+    process.env.TEST_MODE === 'true' ||
+    process.env.NEXT_PUBLIC_TEST_MODE === 'true'
+
+  const testUserType = (process.env.INFLUENCECORE_TEST_USER_TYPE || 'admin') as
+    | 'admin'
+    | 'client'
+
   try {
     // Timeout pour éviter les blocages
     const session = await Promise.race([

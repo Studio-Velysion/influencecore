@@ -177,9 +177,9 @@ export default function GrapesJSEditor({
                 type: 'select',
                 defaults: '32px',
                 options: [
-                  { value: '12px', name: 'Tiny' },
-                  { value: '18px', name: 'Medium' },
-                  { value: '32px', name: 'Big' },
+                  { id: '12px', value: '12px', name: 'Tiny' },
+                  { id: '18px', value: '18px', name: 'Medium' },
+                  { id: '32px', value: '32px', name: 'Big' },
                 ],
               },
             ],

@@ -121,11 +121,9 @@ export default function AdminNavbarChakra() {
                   aria-label="Menu utilisateur"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
                 >
-                  <Avatar
-                    size="sm"
-                    name={session.user.name || session.user.email || 'Admin'}
-                    bg="purple.500"
-                  />
+                  <Avatar.Root size="sm" colorPalette="purple">
+                    <Avatar.Fallback name={session.user.name || session.user.email || 'Admin'} />
+                  </Avatar.Root>
                 </IconButton>
                 {isMenuOpen && (
                   <Box

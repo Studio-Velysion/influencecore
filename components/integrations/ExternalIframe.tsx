@@ -30,13 +30,12 @@ export default function ExternalIframe({ title, src }: { title: string; src: str
         backdropFilter="blur(10px)"
         h="75vh"
       >
-        <Box
-          as="iframe"
+        <iframe
           title={title}
           src={src}
-          w="100%"
-          h="100%"
-          border="0"
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
           sandbox="allow-forms allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
         />
       </Box>

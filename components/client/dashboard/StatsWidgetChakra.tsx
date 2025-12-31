@@ -135,7 +135,7 @@ export default function StatsWidgetChakra() {
                     <Box w="96px" bg="bg.tertiary" borderRadius="full" h="8px" border="1px solid" borderColor="rgba(255,255,255,0.1)">
                       <Progress
                         value={(count / stats.totalIdeas) * 100}
-                        colorScheme="purple"
+                        colorPalette="purple"
                         bg="transparent"
                         borderRadius="full"
                         h="100%"

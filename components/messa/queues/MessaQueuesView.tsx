@@ -115,7 +115,7 @@ export default function MessaQueuesView() {
         </Text>
         <Flex gap={3} flexWrap="wrap">
           <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Nom" maxW="320px" />
-          <Button colorScheme="purple" onClick={createQueue} isDisabled={!canCreate}>
+          <Button colorPalette="purple" onClick={createQueue} disabled={!canCreate}>
             Créer (lun-ven 09:00)
           </Button>
         </Flex>
@@ -160,7 +160,7 @@ export default function MessaQueuesView() {
                     {(q.schedule?.days ?? []).join(', ') || '—'} · {(q.schedule?.times ?? []).join(', ') || '—'}
                   </Box>
                   <Box as="td" p={3} textAlign="right">
-                    <Button size="sm" colorScheme="red" variant="outline" onClick={() => deleteQueue(q.id)}>
+                    <Button size="sm" colorPalette="red" variant="outline" onClick={() => deleteQueue(q.id)}>
                       Supprimer
                     </Button>
                   </Box>

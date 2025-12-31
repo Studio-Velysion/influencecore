@@ -64,13 +64,13 @@ export default function LogViewer() {
       )}
 
       <Flex gap={2} mb={4} flexWrap="wrap">
-        <Button size="sm" onClick={handleShow} colorScheme="purple">
+        <Button size="sm" onClick={handleShow} colorPalette="purple">
           Afficher
         </Button>
-        <Button size="sm" onClick={handleDownload} colorScheme="blue">
+        <Button size="sm" onClick={handleDownload} colorPalette="blue">
           Télécharger
         </Button>
-        <Button size="sm" onClick={handleClear} colorScheme="red">
+        <Button size="sm" onClick={handleClear} colorPalette="red">
           Effacer
         </Button>
       </Flex>

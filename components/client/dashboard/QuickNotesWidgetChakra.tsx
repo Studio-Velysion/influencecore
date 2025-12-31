@@ -80,10 +80,10 @@ export default function QuickNotesWidgetChakra() {
           <Flex justifyContent="space-between" alignItems="center" mt={4}>
             <Button
               type="submit"
-              isLoading={loading}
+              loading={loading}
               loadingText="Enregistrement..."
-              isDisabled={!content.trim()}
-              colorScheme="purple"
+              disabled={!content.trim()}
+              colorPalette="purple"
               variant="solid"
               bg="gold.500"
               color="text.inverse"

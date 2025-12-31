@@ -126,7 +126,7 @@ export default function MessaWorkspacesView() {
             placeholder="Description (optionnel)"
             maxW="520px"
           />
-          <Button colorScheme="purple" onClick={createWorkspace} isDisabled={!canCreate}>
+          <Button colorPalette="purple" onClick={createWorkspace} disabled={!canCreate}>
             Créer
           </Button>
         </Flex>
@@ -171,7 +171,7 @@ export default function MessaWorkspacesView() {
                     {w.description || '—'}
                   </Box>
                   <Box as="td" p={3} textAlign="right">
-                    <Button size="sm" colorScheme="red" variant="outline" onClick={() => deleteWorkspace(w.id)}>
+                    <Button size="sm" colorPalette="red" variant="outline" onClick={() => deleteWorkspace(w.id)}>
                       Supprimer
                     </Button>
                   </Box>

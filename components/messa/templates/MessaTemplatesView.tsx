@@ -129,7 +129,7 @@ export default function MessaTemplatesView() {
           <Textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Contenu (body)..." minH="140px" />
         </Box>
         <Flex justify="flex-end" mt={3}>
-          <Button colorScheme="purple" onClick={createTemplate} isDisabled={!canCreate}>
+          <Button colorPalette="purple" onClick={createTemplate} disabled={!canCreate}>
             Créer
           </Button>
         </Flex>
@@ -174,7 +174,7 @@ export default function MessaTemplatesView() {
                     {t.description || '—'}
                   </Box>
                   <Box as="td" p={3} textAlign="right">
-                    <Button size="sm" colorScheme="red" variant="outline" onClick={() => deleteTemplate(t.id)}>
+                    <Button size="sm" colorPalette="red" variant="outline" onClick={() => deleteTemplate(t.id)}>
                       Supprimer
                     </Button>
                   </Box>

@@ -97,7 +97,7 @@ export default function NewTicketForm() {
         <Flex justify="flex-end" gap={3}>
           <Button
             onClick={submit}
-            isLoading={loading}
+            loading={loading}
             bg="purple.500"
             _hover={{ bg: 'purple.600' }}
             color="white"

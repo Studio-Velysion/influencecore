@@ -48,13 +48,16 @@ export function withErrorLogging<T = any>(
       )
 
       // Retourner une réponse d'erreur
+      // NB: on conserve la signature générique NextResponse<T> pour les handlers,
+      // mais en cas d’erreur on renvoie un payload standardisé (non-T).
+      // On caste pour éviter de casser tous les appelants et rester compatible App Router.
       return NextResponse.json(
         {
           error: 'Une erreur est survenue',
           message: error instanceof Error ? error.message : String(error),
         },
         { status: 500 }
-      )
+      ) as unknown as NextResponse<T>
     }
   }
 }

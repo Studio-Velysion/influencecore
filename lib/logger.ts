@@ -221,6 +221,19 @@ class Logger {
 // Instance singleton
 export const logger = new Logger()
 
+/**
+ * Helper compatible avec l'ancien code (ex: lib/api-error-handler.ts)
+ * Permet de logger une erreur avec un message + un contexte optionnel.
+ */
+export async function logError(
+  message: string,
+  error: unknown,
+  context?: Record<string, any>
+): Promise<void> {
+  // On garde un "component" stable pour retrouver facilement ces erreurs.
+  logger.error('api', message, error, context)
+}
+
 // Exposer globalement pour le debugging
 if (typeof window !== 'undefined') {
   // Fonction pour initialiser le logger global

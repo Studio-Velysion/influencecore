@@ -116,18 +116,17 @@ export default function AdminNavbarChakra() {
               </Text>
               <Box position="relative" ref={menuRef}>
                 <IconButton
-                  icon={
-                    <Avatar
-                      size="sm"
-                      name={session.user.name || session.user.email || 'Admin'}
-                      bg="purple.500"
-                    />
-                  }
                   variant="ghost"
                   borderRadius="full"
                   aria-label="Menu utilisateur"
                   onClick={() => setIsMenuOpen(!isMenuOpen)}
-                />
+                >
+                  <Avatar
+                    size="sm"
+                    name={session.user.name || session.user.email || 'Admin'}
+                    bg="purple.500"
+                  />
+                </IconButton>
                 {isMenuOpen && (
                   <Box
                     position="absolute"

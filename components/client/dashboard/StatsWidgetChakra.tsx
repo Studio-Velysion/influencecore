@@ -133,18 +133,22 @@ export default function StatsWidgetChakra() {
                   <Text fontSize="sm" color="text.tertiary">{status}</Text>
                   <Flex alignItems="center" gap={2}>
                     <Box w="96px" bg="bg.tertiary" borderRadius="full" h="8px" border="1px solid" borderColor="rgba(255,255,255,0.1)">
-                      <Progress
+                      <Progress.Root
                         value={(count / stats.totalIdeas) * 100}
                         colorPalette="purple"
-                        bg="transparent"
-                        borderRadius="full"
                         h="100%"
-                        sx={{
-                          '& > div': {
-                            background: 'linear-gradient(135deg, #9333EA 0%, #EC4899 100%)',
-                          },
-                        }}
-                      />
+                        borderRadius="full"
+                      >
+                        <Progress.Track bg="transparent" h="100%" borderRadius="full">
+                          <Progress.Range
+                            h="100%"
+                            borderRadius="full"
+                            style={{
+                              background: 'linear-gradient(135deg, #9333EA 0%, #EC4899 100%)',
+                            }}
+                          />
+                        </Progress.Track>
+                      </Progress.Root>
                     </Box>
                     <Text fontSize="sm" fontWeight="medium" color="text.primary" w="32px" textAlign="right">
                       {count}

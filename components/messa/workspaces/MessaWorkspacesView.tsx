@@ -156,11 +156,11 @@ export default function MessaWorkspacesView() {
           </Box>
           <Box as="tbody">
             {workspaces.length === 0 ? (
-              <Box as="tr">
-                <Box as="td" p={4} colSpan={3 as any}>
+              <tr>
+                <td colSpan={3} style={{ padding: 16 }}>
                   <Text color="text.secondary">Aucun workspace.</Text>
-                </Box>
-              </Box>
+                </td>
+              </tr>
             ) : (
               workspaces.map((w) => (
                 <Box as="tr" key={w.id} borderTop="1px solid" borderColor="rgba(255,255,255,0.06)">

@@ -145,11 +145,11 @@ export default function MessaQueuesView() {
           </Box>
           <Box as="tbody">
             {queues.length === 0 ? (
-              <Box as="tr">
-                <Box as="td" p={4} colSpan={3 as any}>
+              <tr>
+                <td colSpan={3} style={{ padding: 16 }}>
                   <Text color="text.secondary">Aucune queue.</Text>
-                </Box>
-              </Box>
+                </td>
+              </tr>
             ) : (
               queues.map((q) => (
                 <Box as="tr" key={q.id} borderTop="1px solid" borderColor="rgba(255,255,255,0.06)">

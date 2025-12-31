@@ -95,7 +95,7 @@ export default function StatsWidgetChakra() {
         </Text>
       </Box>
       <Box>
-        <SimpleGrid columns={{ base: 2, md: 4 }} spacing={4} mb={6}>
+        <SimpleGrid columns={{ base: 2, md: 4 }} gap={4} mb={6}>
           <Box textAlign="center" p={4} borderRadius="lg" bg="bg.tertiary" border="1px solid" borderColor="rgba(255,255,255,0.1)">
             <Text fontSize="2xl" fontWeight="bold" bgGradient="linear(to-r, purple.400, pink.400)" bgClip="text">
               {formatNumber(stats.totalIdeas)}

@@ -30,7 +30,9 @@
     "mixpost-main",
     "keycloak-main",
     "grapesjs-dev",
-    "vision-ui-dashboard-chakra-main"
+    "vision-ui-dashboard-chakra-main",
+    "helpdesk-develop",
+    "FOSSBilling"
   ]
 }
 

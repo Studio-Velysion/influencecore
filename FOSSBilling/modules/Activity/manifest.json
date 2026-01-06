@@ -1,8 +1,0 @@
-{
-  "id": "activity",
-  "type": "mod",
-  "name": "Activity",
-  "description": "FOSSBilling core module",
-  "version": "1.0.0",
-  "icon_url": "icon.svg"
-}

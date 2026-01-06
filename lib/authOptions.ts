@@ -13,9 +13,8 @@ import { prisma } from '@/lib/prisma'
  * sinon Next.js considère ça comme un export invalide pour une Route.
  */
 export const authOptions: NextAuthOptions = {
-  // CapRover / reverse proxy: permet à NextAuth d'utiliser x-forwarded-host/proto
-  // pour construire automatiquement les URLs quand NEXTAUTH_URL n'est pas défini.
-  trustHost: true,
+  // NOTE: `trustHost` n'existe pas en next-auth v4 (présent en v5/Auth.js).
+  // En prod derrière un reverse proxy, définis plutôt `NEXTAUTH_URL` (et `NEXTAUTH_SECRET`).
   providers: [
     // Keycloak (SSO + rôles)
     ...(process.env.KEYCLOAK_ISSUER &&

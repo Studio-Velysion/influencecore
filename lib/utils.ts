@@ -61,6 +61,7 @@ export function extractKeywords(text: string): string[] {
     .split(/\s+/)
     .filter((word) => word.length > 2)
 
-  return [...new Set(words)]
+  // Compat TS target ES5: éviter l'itération directe d'un Set.
+  return Array.from(new Set(words))
 }
 

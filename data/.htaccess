@@ -1,2 +1,0 @@
-RewriteEngine On
-RewriteRule !^assets/gateways/.*\.(jpe?g|png)$ - [F,NC]

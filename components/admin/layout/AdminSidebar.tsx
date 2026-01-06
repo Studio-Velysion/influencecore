@@ -27,18 +27,6 @@ const navItems: NavItem[] = [
     icon: 'bi-shield-lock',
   },
   {
-    label: 'CMS',
-    href: '#',
-    icon: 'bi-pencil-square',
-    children: [
-      {
-        label: 'Page d\'accueil',
-        href: '/admin/cms',
-        icon: 'bi-circle',
-      },
-    ],
-  },
-  {
     label: 'Paramètres',
     href: '/admin/settings',
     icon: 'bi-gear',

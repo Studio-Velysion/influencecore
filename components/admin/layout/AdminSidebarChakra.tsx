@@ -15,11 +15,9 @@ import {
   FiHome,
   FiUsers,
   FiShield,
-  FiFileText,
   FiSettings,
   FiLayout,
   FiAlertCircle,
-  FiPackage,
 } from 'react-icons/fi'
 
 interface RouteItem {
@@ -31,19 +29,9 @@ interface RouteItem {
 
 const routes: RouteItem[] = [
   { path: '/admin', label: 'Dashboard', icon: FiHome },
-  { path: '/messa', label: 'Messa', icon: FiPackage },
   { path: '/admin/users', label: 'Utilisateurs', icon: FiUsers },
   { path: '/integrations/keycloak', label: 'Keycloak (Rôles)', icon: FiShield },
-  {
-    path: '/admin/cms',
-    label: 'CMS',
-    icon: FiLayout,
-    children: [
-      { path: '/admin/cms', label: 'Page d\'accueil', icon: FiFileText },
-    ],
-  },
   { path: '/admin/logs', label: 'Logs d\'Erreurs', icon: FiAlertCircle },
-  { path: '/admin/grapesjs', label: 'Éditeur GrapesJS', icon: FiLayout },
   { path: '/admin/settings', label: 'Paramètres', icon: FiSettings },
 ]
 

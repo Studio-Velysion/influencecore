@@ -85,7 +85,7 @@ export default async function Home() {
             flexWrap: 'wrap'
           }}>
             <HomeButton
-              href="/dashboard"
+              href="/login"
               style={{
                 backgroundColor: '#F59E0B',
                 color: '#0A0A0F',
@@ -101,11 +101,11 @@ export default async function Home() {
                 boxShadow: '0 0 20px rgba(245, 158, 11, 0.4)'
               }}
             >
-              Accéder au Dashboard
+              Se connecter
             </HomeButton>
             
             <HomeButton
-              href="/dashboard"
+              href="/register"
               style={{
                 background: 'linear-gradient(135deg, #9333EA 0%, #EC4899 100%)',
                 color: 'white',
@@ -121,7 +121,7 @@ export default async function Home() {
                 boxShadow: '0 8px 32px rgba(147, 51, 234, 0.2)'
               }}
             >
-              Découvrir la Plateforme
+              Créer un compte
             </HomeButton>
           </div>
           

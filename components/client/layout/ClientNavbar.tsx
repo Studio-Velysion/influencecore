@@ -15,7 +15,6 @@ const routeNames: Record<string, string> = {
   '/scripts': 'Scripts',
   '/calendar': 'Calendrier',
   '/notes': 'Notes',
-  '/messa': 'Messa',
   '/helpdesk/new': 'Créer un ticket',
   '/subscriptions': 'Abonnements',
 }

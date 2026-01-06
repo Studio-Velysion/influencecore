@@ -16,7 +16,7 @@
     "postiz:install": "pnpm -C postiz-app-main install",
     "postiz:backend": "cd postiz-app-main && pnpm --filter ./apps/backend run dev"
     ,
-    "messa:dev": "powershell -ExecutionPolicy Bypass -File \"START_MESSA_DEV.ps1\""
+    "messa:dev": "echo \"Messa retiré\""
   },
   "dependencies": {
     "@chakra-ui/react": "^3.30.0",

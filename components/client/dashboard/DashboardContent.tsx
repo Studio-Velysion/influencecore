@@ -258,15 +258,6 @@ export default function DashboardContent() {
       permission: PERMISSIONS.NOTES_VIEW,
     },
     {
-      path: '/messa',
-      label: 'Messa',
-      title: 'Messa',
-      description: 'Accédez à votre système Messa',
-      iconKey: 'package',
-      bgColor: 'blue.500',
-      permission: PERMISSIONS.MESSA_ACCESS,
-    },
-    {
       path: '/helpdesk/new',
       label: 'Support',
       title: 'Créer un ticket',
@@ -304,15 +295,6 @@ export default function DashboardContent() {
       iconKey: 'shield',
       bgColor: 'green.500',
       permission: PERMISSIONS.ADMIN_USERS,
-    },
-    {
-      path: '/admin/cms',
-      label: 'CMS',
-      title: 'Gestion du contenu',
-      description: 'Modifier les pages publiques',
-      iconKey: 'layout',
-      bgColor: 'pink.500',
-      permission: PERMISSIONS.ADMIN_CMS,
     },
     {
       path: '/integrations/helpdesk',

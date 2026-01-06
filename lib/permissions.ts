@@ -7,7 +7,6 @@ export const PERMISSIONS = {
   // Administration
   ADMIN_ACCESS: 'admin.access',
   ADMIN_USERS: 'admin.users',
-  ADMIN_CMS: 'admin.cms',
   ADMIN_LOGS: 'admin.logs',
   
   // Intégrations
@@ -41,15 +40,6 @@ export const PERMISSIONS = {
   NOTES_CREATE: 'notes.create',
   NOTES_EDIT: 'notes.edit',
   NOTES_DELETE: 'notes.delete',
-
-  // Messa (remplace Fusion)
-  MESSA_ACCESS: 'messa.access',
-  MESSA_WORKSPACES_VIEW: 'messa.workspaces.view',
-  MESSA_TEMPLATES_VIEW: 'messa.templates.view',
-  MESSA_POST_VERSIONS_VIEW: 'messa.post_versions.view',
-  MESSA_QUEUES_VIEW: 'messa.queues.view',
-  MESSA_HASHTAG_GROUPS_VIEW: 'messa.hashtag_groups.view',
-  MESSA_DYNAMIC_VARIABLES_VIEW: 'messa.dynamic_variables.view',
 } as const
 
 export type PermissionKey = typeof PERMISSIONS[keyof typeof PERMISSIONS]
@@ -62,7 +52,6 @@ export const PERMISSION_CATEGORIES = {
   scripts: 'Scripts',
   calendar: 'Calendrier',
   notes: 'Notes',
-  messa: 'Messa',
 } as const
 
 // Permissions par catégorie
@@ -102,15 +91,6 @@ export const PERMISSIONS_BY_CATEGORY = {
     { key: PERMISSIONS.NOTES_EDIT, name: 'Modifier les notes', description: 'Modifier les notes existantes' },
     { key: PERMISSIONS.NOTES_DELETE, name: 'Supprimer les notes', description: 'Supprimer des notes' },
   ],
-  messa: [
-    { key: PERMISSIONS.MESSA_ACCESS, name: 'Accès Messa', description: 'Accéder à Messa' },
-    { key: PERMISSIONS.MESSA_WORKSPACES_VIEW, name: 'Voir les workspaces', description: 'Consulter les espaces de travail' },
-    { key: PERMISSIONS.MESSA_TEMPLATES_VIEW, name: 'Voir les templates', description: 'Consulter les modèles' },
-    { key: PERMISSIONS.MESSA_POST_VERSIONS_VIEW, name: 'Voir les versions', description: 'Consulter les versions de contenu' },
-    { key: PERMISSIONS.MESSA_QUEUES_VIEW, name: 'Voir les queues', description: 'Consulter les files de publication' },
-    { key: PERMISSIONS.MESSA_HASHTAG_GROUPS_VIEW, name: 'Voir les groupes de hashtags', description: 'Consulter les groupes de hashtags' },
-    { key: PERMISSIONS.MESSA_DYNAMIC_VARIABLES_VIEW, name: 'Voir les variables dynamiques', description: 'Consulter les variables dynamiques' },
-  ],
 }
 
 /**
@@ -123,7 +103,6 @@ export const PERMISSIONS_BY_CATEGORY = {
 const ADMIN_ONLY: PermissionKey[] = [
   PERMISSIONS.ADMIN_ACCESS,
   PERMISSIONS.ADMIN_USERS,
-  PERMISSIONS.ADMIN_CMS,
   PERMISSIONS.ADMIN_LOGS,
 ]
 

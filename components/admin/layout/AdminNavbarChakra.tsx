@@ -21,7 +21,6 @@ const routeNames: Record<string, string> = {
   '/admin': 'Dashboard',
   '/admin/users': 'Utilisateurs',
   '/integrations/keycloak': 'Keycloak (Rôles)',
-      '/admin/cms': 'CMS - Page d\'accueil',
       '/admin/logs': 'Logs d\'Erreurs',
       '/admin/settings': 'Paramètres',
 }

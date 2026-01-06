@@ -9,7 +9,7 @@ import {
 import { FiX } from 'react-icons/fi'
 import { usePathname } from 'next/navigation'
 import NextLink from 'next/link'
-import { FiHome, FiVideo, FiFileText, FiCalendar, FiEdit3, FiLayout, FiLifeBuoy, FiCreditCard } from 'react-icons/fi'
+import { FiHome, FiVideo, FiFileText, FiCalendar, FiEdit3, FiLifeBuoy, FiCreditCard } from 'react-icons/fi'
 import { useState, useEffect } from 'react'
 import { PERMISSIONS } from '@/lib/permissions'
 
@@ -23,7 +23,6 @@ interface RouteItem {
 
 const clientRoutes: RouteItem[] = [
   { path: '/dashboard', label: 'Dashboard', icon: FiHome, section: 'client' },
-  { path: '/messa', label: 'Messa', icon: FiLayout, permission: PERMISSIONS.MESSA_ACCESS, section: 'client' },
   { path: '/ideas', label: 'Idées', icon: FiVideo, permission: PERMISSIONS.IDEAS_VIEW, section: 'client' },
   { path: '/scripts', label: 'Scripts', icon: FiFileText, permission: PERMISSIONS.SCRIPTS_VIEW, section: 'client' },
   { path: '/calendar', label: 'Calendrier', icon: FiCalendar, permission: PERMISSIONS.CALENDAR_VIEW, section: 'client' },

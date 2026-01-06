@@ -1,0 +1,42 @@
+name: Patch — Hotfix / correctif rapide
+description: Un patch court et ciblé (prod, build, déploiement).
+title: "[Patch] "
+labels: ["patch"]
+body:
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexte
+      description: Pourquoi ce patch est nécessaire ? (lien logs, incident, etc.)
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope du patch
+      placeholder: |
+        - Fichiers impactés:
+        - Comportement impacté:
+        - Risques:
+    validations:
+      required: true
+  - type: textarea
+    id: plan
+    attributes:
+      label: Plan (étapes)
+      placeholder: |
+        - [ ] …
+        - [ ] …
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: Comment on vérifie que c’est OK ?
+      placeholder: |
+        - [ ] build ok
+        - [ ] smoke test …
+    validations:
+      required: true
+

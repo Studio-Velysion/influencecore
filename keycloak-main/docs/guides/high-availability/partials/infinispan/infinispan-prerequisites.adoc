@@ -1,2 +1,0 @@
-* {kubernetes} cluster running
-* Understanding of the {infinispan-operator-docs}[{jdgserver_name} Operator]

@@ -1,24 +1,23 @@
 version: '3.8'
 
 services:
-  mariadb:
-    image: mariadb:10.11
-    container_name: influencecore-mariadb
+  postgres:
+    image: postgres:17-alpine
+    container_name: influencecore-postgres
     restart: always
-    command:
-      - --character-set-server=utf8mb4
-      - --collation-server=utf8mb4_unicode_ci
     environment:
-      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-influencecore}
     ports:
-      - "${MARIADB_PORT:-3306}:3306"
+      - "${POSTGRES_PORT:-5432}:5432"
     volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./mariadb/init:/docker-entrypoint-initdb.d:ro
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
     networks:
       - influencecore-network
     healthcheck:
-      test: ["CMD", "healthcheck.sh", "--connect"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB:-influencecore}"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -29,19 +28,17 @@ services:
     restart: always
     command: start-dev --import-realm
     environment:
-      KC_DB: mysql
-      KC_DB_URL_HOST: mariadb
-      KC_DB_URL_PORT: 3306
-      KC_DB_URL_DATABASE: keycloak
-      KC_DB_USERNAME: root
-      KC_DB_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      KC_DB: postgres
+      KC_DB_URL: "jdbc:postgresql://postgres:5432/keycloak"
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
       KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
       KC_HTTP_ENABLED: "true"
       KC_HOSTNAME_STRICT: "false"
       KC_PROXY: edge
     depends_on:
-      mariadb:
+      postgres:
         condition: service_healthy
     ports:
       - "${KEYCLOAK_PORT:-8080}:8080"
@@ -58,12 +55,12 @@ services:
     container_name: influencecore-app
     restart: always
     depends_on:
-      mariadb:
+      postgres:
         condition: service_healthy
     environment:
       PORT: "3000"
-      # Prisma (MariaDB)
-      DATABASE_URL: "mysql://root:${MARIADB_ROOT_PASSWORD}@mariadb:3306/influencecore"
+      # Prisma (PostgreSQL)
+      DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-influencecore}?schema=public"
       # NextAuth
       NEXTAUTH_URL: ${NEXTAUTH_URL}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
@@ -88,7 +85,7 @@ services:
       - influencecore-network
 
 volumes:
-  mariadb_data:
+  postgres_data:
     driver: local
 
 networks:

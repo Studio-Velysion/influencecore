@@ -3,7 +3,7 @@
 ## Hypothèses (noms d’apps)
 
 - influencecore
-- mariadb
+- postgres
 - keycloak
 - helpdesk
 - fossbilling
@@ -17,7 +17,7 @@ Le DNS interne CapRover est: `srv-captain--<app-name>`.
 
 ```env
 PORT=80
-DATABASE_URL=mysql://root:<MARIADB_ROOT_PASSWORD>@srv-captain--mariadb:3306/influencecore
+DATABASE_URL=postgresql://<POSTGRES_USER>:<POSTGRES_PASSWORD>@srv-captain--postgres:5432/influencecore?schema=public
 
 NEXTAUTH_URL=https://<ton-domaine-influencecore>
 NEXTAUTH_SECRET=<secret-fort>
@@ -56,12 +56,10 @@ NEXT_PUBLIC_KEYCLOAK_ADMIN_URL=https://<ton-domaine-keycloak>/admin/master/conso
 ## 2) keycloak
 
 ```env
-KC_DB=mysql
-KC_DB_URL_HOST=srv-captain--mariadb
-KC_DB_URL_PORT=3306
-KC_DB_URL_DATABASE=keycloak
-KC_DB_USERNAME=root
-KC_DB_PASSWORD=<MARIADB_ROOT_PASSWORD>
+KC_DB=postgres
+KC_DB_URL=jdbc:postgresql://srv-captain--postgres:5432/keycloak
+KC_DB_USERNAME=<POSTGRES_USER>
+KC_DB_PASSWORD=<POSTGRES_PASSWORD>
 
 KEYCLOAK_ADMIN=admin
 KEYCLOAK_ADMIN_PASSWORD=<mot-de-passe-admin-keycloak>
@@ -78,7 +76,7 @@ KC_PROXY=edge
 > Le déploiement Frappe est plus complexe (bench/site/migrations). On doit le finaliser côté CapRover (One‑Click ou image dédiée).
 
 DB à viser:
-- host: `srv-captain--mariadb`
+- host: `srv-captain--postgres`
 - database: `helpdesk`
 
 ---
@@ -86,7 +84,7 @@ DB à viser:
 ## 4) fossbilling
 
 DB à viser:
-- host: `srv-captain--mariadb`
+- host: `srv-captain--postgres`
 - database: `fossbilling`
 
 ---

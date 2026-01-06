@@ -27,7 +27,7 @@ docker-compose -f docker/docker-compose.local.yml up -d
 ## 📝 Notes
 
 Les fichiers Docker sont utilisés pour :
-- **Une seule instance MariaDB** (InfluenceCore + Keycloak + Helpdesk + FOSSBilling sur le même serveur DB)
+- **Une seule instance PostgreSQL** (InfluenceCore + Keycloak + services compatibles)
 - **Keycloak** (gestion des rôles + SSO)
 - Déploiement en production / local
 
@@ -42,6 +42,6 @@ Avant, crée `docker/.env` (non versionné) à partir de `docker/env.example` et
 Puis configure `DATABASE_URL` côté InfluenceCore:
 
 ```env
-DATABASE_URL="mysql://root:influencecore123@localhost:3306/influencecore"
+DATABASE_URL="postgresql://postgres:change-me@localhost:5432/influencecore?schema=public"
 ```
 

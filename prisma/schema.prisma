@@ -1,12 +1,12 @@
-// Schéma Prisma (production) — MariaDB/MySQL
-// Objectif: une seule instance MariaDB partagée (InfluenceCore + Keycloak + Helpdesk + FOSSBilling)
+// Schéma Prisma (production) — PostgreSQL
+// Objectif: utiliser PostgreSQL (ex: Coolify, Supabase, Docker) via DATABASE_URL.
 
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 

@@ -7,7 +7,7 @@ Organisez vos idées, scripts et workflow vidéo en un seul endroit.
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-14-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
-![MariaDB](https://img.shields.io/badge/MariaDB-10.11-blue)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue)
 
 ---
 
@@ -38,7 +38,7 @@ Organisez vos idées, scripts et workflow vidéo en un seul endroit.
 
 - **App**: Next.js 14 (App Router) + React + TypeScript
 - **UI**: Chakra UI v3 (+ styles Velysion)
-- **DB**: MariaDB (MySQL) + Prisma
+- **DB**: PostgreSQL + Prisma
 - **Auth**: NextAuth.js + Keycloak (OIDC)
 - **Containers**: Docker / Docker Compose
 - **Déploiement**: CapRover (recommandé pour le multi-conteneurs)
@@ -53,7 +53,7 @@ Organisez vos idées, scripts et workflow vidéo en un seul endroit.
 copy docker\\env.example docker\\.env
 ```
 
-1. **Renseigner tes variables** dans `docker/.env` (mots de passe MariaDB, secrets NextAuth, Keycloak client, etc.)
+1. **Renseigner tes variables** dans `docker/.env` (mots de passe PostgreSQL, secrets NextAuth, Keycloak client, etc.)
 
 1. **Démarrer la stack locale**
 
@@ -74,9 +74,9 @@ docker compose -f docker/docker-compose.local.yml up -d
 
 ## 🗄️ Base de données
 
-Le projet utilise **MariaDB** avec Prisma.
+Le projet utilise **PostgreSQL** avec Prisma.
 
-Les services (InfluenceCore, Keycloak, Helpdesk, FOSSBilling) peuvent partager la **même instance MariaDB** (bases séparées).
+Les services (InfluenceCore, Keycloak, services compatibles) peuvent partager la **même instance PostgreSQL** (bases séparées).
 
 ---
 
@@ -184,7 +184,7 @@ influencecore/
 
 ### Erreur : "Can't reach database server"
 
-- Vérifie que MariaDB tourne (Docker) et que `DATABASE_URL` est correcte
+- Vérifie que PostgreSQL tourne (Docker) et que `DATABASE_URL` est correcte
 - Voir `docker/README.md`
 
 ### Erreur Prisma

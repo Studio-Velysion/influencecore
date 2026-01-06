@@ -5,7 +5,7 @@ CapRover déploie **1 conteneur par application**. Pour ta stack complète, cré
 ### Noms d’apps recommandés (à utiliser tels quels)
 
 - **influencecore** (Next.js + Prisma)
-- **mariadb** (service DB unique)
+- **postgres** (service DB unique)
 - **keycloak** (SSO + rôles)
 - **helpdesk** (Frappe)
 - **fossbilling** (PHP)
@@ -17,7 +17,7 @@ Le repo contient `captain-definition` à la racine → CapRover détecte automat
 
 ### Variables d’environnement (InfluenceCore)
 
-- `DATABASE_URL` : `mysql://root:<PASS>@srv-captain--mariadb:3306/influencecore`
+- `DATABASE_URL` : `postgresql://<POSTGRES_USER>:<PASS>@srv-captain--postgres:5432/influencecore?schema=public`
 - `PORT` : `80` (CapRover expose généralement le port 80 du conteneur)
 - `NEXTAUTH_URL` : `https://ton-domaine`
 - `NEXTAUTH_SECRET` : secret fort
@@ -57,10 +57,9 @@ Variables à définir côté InfluenceCore pour que les API fonctionnent correct
 
 ## Checklist rapide CapRover (ordre)
 
-1) Créer l’app **mariadb** (one‑click) et définir le mot de passe root  
-2) Créer l’app **keycloak** (image) et connecter la DB `keycloak` sur `srv-captain--mariadb:3306`  
-3) Créer l’app **helpdesk** (Frappe) et connecter la DB `helpdesk` sur `srv-captain--mariadb:3306` + Redis  
-4) Créer l’app **fossbilling** et connecter la DB `fossbilling` sur `srv-captain--mariadb:3306`  
+1) Créer l’app **postgres** (one‑click) et définir le user/password  
+2) Créer l’app **keycloak** (image) et connecter la DB `keycloak` sur `srv-captain--postgres:5432`  
+3) (Optionnel) Déployer tes services annexes selon leur compatibilité DB (certains stacks legacy restent MySQL‑only)  
 5) Créer l’app **postiz-backend** (si tu utilises Messa)  
 6) Déployer **influencecore** depuis Git et renseigner toutes les variables ci‑dessus
 

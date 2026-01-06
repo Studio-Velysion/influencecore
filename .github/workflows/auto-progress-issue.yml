@@ -1,0 +1,72 @@
+name: Auto create progress Issue
+
+on:
+  push:
+    branches:
+      - develop
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  create_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Issue for this push
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const sha = context.sha;
+            const shortSha = sha.slice(0, 7);
+
+            const head = context.payload.head_commit;
+            const headMessage = (head?.message || '').trim();
+
+            // Opt-out support (rare): add [no-issue] in the commit message.
+            if (/\[no-issue\]/i.test(headMessage)) {
+              core.info('Skipping auto-issue because commit message contains [no-issue].');
+              return;
+            }
+
+            const commits = Array.isArray(context.payload.commits) ? context.payload.commits : [];
+
+            const title = `[Progress] ${shortSha} — ${headMessage.split('\n')[0] || 'Mise à jour'}`;
+
+            const commitLines = commits.map(c => {
+              const msg = String(c.message || '').split('\n')[0];
+              const id = String(c.id || '').slice(0, 7);
+              const url = c.url || '';
+              return `- ${id} — ${msg}${url ? ` (${url})` : ''}`;
+            });
+
+            const body = [
+              `### Résumé`,
+              ``,
+              `Push sur \`${context.ref}\` (${commits.length || 1} commit${(commits.length || 1) > 1 ? 's' : ''}).`,
+              ``,
+              `- **SHA**: \`${sha}\``,
+              `- **Auteur**: ${head?.author?.name ? `\`${head.author.name}\`` : 'n/a'}`,
+              ``,
+              `### Commits`,
+              ``,
+              ...(commitLines.length ? commitLines : [`- ${shortSha} — ${headMessage.split('\n')[0] || 'Mise à jour'}`]),
+              ``,
+              `### Checklist`,
+              ``,
+              `- [ ] Déploiement / rebuild OK`,
+              `- [ ] Smoke test OK (login / page principale)`,
+              `- [ ] Notes / ajustements`,
+            ].join('\n');
+
+            // Create the issue
+            await github.rest.issues.create({
+              owner,
+              repo,
+              title,
+              body,
+            });
+
+

@@ -77,7 +77,7 @@ async function main() {
   // - On Windows, pnpm `run ... -- -p` combiné avec `dotenv ... -- next dev`
   //   injecte un `"--"` supplémentaire et Next interprète `-p` comme un dossier projet.
   // - On passe donc par `pnpm exec` et on appelle directement le binaire `next` avec ses flags.
-  const cmd = `pnpm --filter ./apps/frontend exec -- dotenv -e ../../config/dev.env -- next dev -p ${port}`;
+  const cmd = `pnpm --filter ./apps/frontend exec -- node ../../scripts/run-with-env.cjs --env-file ../../config/dev.env -- next dev -p ${port}`;
   const child = spawn(cmd, { stdio: "inherit", shell: true, cwd: root });
   child.on("exit", (code) => process.exit(code ?? 1));
 }

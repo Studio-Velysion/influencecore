@@ -1,0 +1,16 @@
+{
+  "name": "postiz-frontend",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "dotenv -e ../../config/dev.env -- next dev",
+    "build": "next build",
+    "build:sentry": "dotenv -e ../../config/dev.env -- next build",
+    "start": "dotenv -e ../../config/dev.env -- next start",
+    "pm2": "pm2 start pnpm --name frontend -- start"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

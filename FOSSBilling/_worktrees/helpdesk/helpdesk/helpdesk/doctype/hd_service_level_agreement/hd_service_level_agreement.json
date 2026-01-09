@@ -1,0 +1,228 @@
+{
+ "actions": [],
+ "autoname": "field:service_level",
+ "creation": "2023-08-22 11:14:25.683372",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "default_priority",
+  "service_level",
+  "column_break_2",
+  "description",
+  "enabled",
+  "filters_section",
+  "default_sla",
+  "column_break_15",
+  "condition",
+  "condition_json",
+  "agreement_details_section",
+  "start_date",
+  "column_break_7",
+  "end_date",
+  "response_and_resolution_time_section",
+  "apply_sla_for_resolution",
+  "priorities",
+  "status_details",
+  "default_ticket_status",
+  "column_break_baqo",
+  "ticket_reopen_status",
+  "support_and_resolution_section_break",
+  "holiday_list",
+  "support_and_resolution"
+ ],
+ "fields": [
+  {
+   "fieldname": "service_level",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Service Level Name",
+   "reqd": 1,
+   "set_only_once": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "holiday_list",
+   "fieldtype": "Link",
+   "label": "Holiday List",
+   "options": "HD Service Holiday List",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_2",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "agreement_details_section",
+   "fieldtype": "Section Break",
+   "label": "Valid From"
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "label": "Start Date"
+  },
+  {
+   "fieldname": "column_break_7",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "label": "End Date"
+  },
+  {
+   "fieldname": "response_and_resolution_time_section",
+   "fieldtype": "Section Break",
+   "label": "Response and Resolution"
+  },
+  {
+   "fieldname": "support_and_resolution_section_break",
+   "fieldtype": "Section Break",
+   "label": "Working Hours"
+  },
+  {
+   "fieldname": "support_and_resolution",
+   "fieldtype": "Table",
+   "label": "Working Hours",
+   "options": "HD Service Day",
+   "reqd": 1
+  },
+  {
+   "fieldname": "priorities",
+   "fieldtype": "Table",
+   "label": "Priorities",
+   "options": "HD Service Level Priority",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "default_sla",
+   "fieldtype": "Check",
+   "label": "Default SLA"
+  },
+  {
+   "fieldname": "default_priority",
+   "fieldtype": "Link",
+   "label": "Default Priority",
+   "options": "HD Ticket Priority",
+   "read_only": 1
+  },
+  {
+   "default": "1",
+   "fieldname": "enabled",
+   "fieldtype": "Check",
+   "label": "Enabled"
+  },
+  {
+   "fieldname": "status_details",
+   "fieldtype": "Section Break",
+   "label": "Status Details"
+  },
+  {
+   "default": "1",
+   "fieldname": "apply_sla_for_resolution",
+   "fieldtype": "Check",
+   "label": "Apply SLA for Resolution Time"
+  },
+  {
+   "fieldname": "filters_section",
+   "fieldtype": "Section Break",
+   "label": "Assignment Conditions"
+  },
+  {
+   "fieldname": "column_break_15",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: !doc.default_sla && !doc.condition_json",
+   "description": "Simple Python Expression, Example: doc.status == 'Open' and doc.ticket_type == 'Bug'",
+   "fieldname": "condition",
+   "fieldtype": "Code",
+   "label": "Condition",
+   "max_height": "7rem",
+   "options": "PythonExpression"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Data",
+   "label": "Description"
+  },
+  {
+   "depends_on": "eval: !doc.default_sla && doc.condition_json",
+   "description": "Auto-generated from the portal view \u2014 do not edit directly unless you know what you're doing! ",
+   "fieldname": "condition_json",
+   "fieldtype": "Code",
+   "label": "Condition",
+   "max_height": "1rem"
+  },
+  {
+   "fieldname": "column_break_baqo",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "Status of the ticket, when a customer replies on the ticket with this SLA.\n\nIf not selected, the value will be takes from HD Settings DocType.",
+   "fieldname": "ticket_reopen_status",
+   "fieldtype": "Link",
+   "label": "Ticket Reopen status",
+   "link_filters": "[[\"HD Ticket Status\",\"category\",\"=\",\"Open\"]]",
+   "options": "HD Ticket Status"
+  },
+  {
+   "description": "Status of the ticket, when it is created in the system with this SLA.\nIf not selected, the value will be taken from HD Settings DocType",
+   "fieldname": "default_ticket_status",
+   "fieldtype": "Link",
+   "label": "Default Ticket Status",
+   "link_filters": "[[\"HD Ticket Status\",\"category\",\"=\",\"Open\"]]",
+   "options": "HD Ticket Status"
+  }
+ ],
+ "links": [],
+ "modified": "2025-08-23 12:29:41.399804",
+ "modified_by": "Administrator",
+ "module": "Helpdesk",
+ "name": "HD Service Level Agreement",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Agent",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "All",
+   "share": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

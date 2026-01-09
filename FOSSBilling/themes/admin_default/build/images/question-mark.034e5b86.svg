@@ -1,0 +1,8 @@
+export default {
+      id: "question-mark-usage",
+      viewBox: "0 0 24 24",
+      url: "symbol/" + "/home/runner/work/FOSSBilling/FOSSBilling/src/themes/admin_default/assets/icons/question-mark.svg",
+      toString: function () {
+        return this.url;
+      }
+    }

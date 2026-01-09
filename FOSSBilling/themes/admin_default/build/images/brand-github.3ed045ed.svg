@@ -1,0 +1,8 @@
+export default {
+      id: "brand-github-usage",
+      viewBox: "0 0 24 24",
+      url: "symbol/" + "/home/runner/work/FOSSBilling/FOSSBilling/src/themes/admin_default/assets/icons/brand-github.svg",
+      toString: function () {
+        return this.url;
+      }
+    }

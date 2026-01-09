@@ -1,0 +1,8 @@
+export default {
+      id: "wifi-usage",
+      viewBox: "0 0 24 24",
+      url: "symbol/" + "/home/runner/work/FOSSBilling/FOSSBilling/src/themes/admin_default/assets/icons/wifi.svg",
+      toString: function () {
+        return this.url;
+      }
+    }

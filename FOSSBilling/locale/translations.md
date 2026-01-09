@@ -1,0 +1,44 @@
+## FOSSBilling Translations
+Dated: Thu Sep  4 13:51:16 UTC 2025
+Translation Tag: [b862258421969f226599809c5755af11](https://github.com/FOSSBilling/locale/releases/tag/b862258421969f226599809c5755af11)
+ - `ro_RO`: ▰▰▰▰▰▰▰▰▰▰ 100% translated
+ - `fr_FR`: ▰▰▰▰▰▰▰▰▰▱ 91% translated
+ - `el_GR`: ▰▰▰▰▰▰▰▰▱▱ 87% translated
+ - `pt_PT`: ▰▰▰▰▰▰▰▱▱▱ 75% translated
+ - `tr_TR`: ▰▰▰▰▰▰▰▰▰▱ 95% translated
+ - `fa_IR`: ▰▰▰▰▰▰▰▰▱▱ 87% translated
+ - `bn_BD`: ▱▱▱▱▱▱▱▱▱▱ 3% translated (excluded, too incomplete)
+ - `fi_FI`: ▰▰▰▰▰▰▰▰▱▱ 82% translated
+ - `nl_NL`: ▰▰▰▰▰▰▰▰▱▱ 88% translated
+ - `zh_CN`: ▰▰▰▰▰▰▰▰▱▱ 88% translated
+ - `uk_UA`: ▰▰▰▰▰▰▰▰▱▱ 89% translated
+ - `vi_VN`: ▰▰▰▰▰▰▰▱▱▱ 77% translated
+ - `ar_SA`: ▰▰▰▰▰▰▰▰▱▱ 80% translated
+ - `pl_PL`: ▰▰▰▰▰▰▰▰▱▱ 88% translated
+ - `en_AU`: ▰▰▰▰▰▰▰▰▰▱ 91% translated
+ - `he_IL`: ▱▱▱▱▱▱▱▱▱▱ 6% translated (excluded, too incomplete)
+ - `pt_BR`: ▰▰▰▰▰▰▰▰▰▰ 100% translated
+ - `en_GB`: ▰▰▰▰▰▰▰▰▰▱ 95% translated
+ - `cs_CZ`: ▰▰▰▰▰▰▰▰▰▰ 100% translated
+ - `hr_HR`: ▰▰▰▱▱▱▱▱▱▱ 34% translated
+ - `ko_KR`: ▱▱▱▱▱▱▱▱▱▱ 2% translated (excluded, too incomplete)
+ - `lt_LT`: ▰▰▰▰▰▰▱▱▱▱ 64% translated
+ - `ar_EG`: ▰▱▱▱▱▱▱▱▱▱ 12% translated (excluded, too incomplete)
+ - `zh_TW`: ▰▰▰▰▰▰▱▱▱▱ 64% translated
+ - `sr_RS`: ▰▰▰▰▰▰▰▰▰▱ 93% translated
+ - `uz_UZ`: ▰▰▰▰▱▱▱▱▱▱ 44% translated
+ - `sv_SE`: ▱▱▱▱▱▱▱▱▱▱ 0% translated (excluded, too incomplete)
+ - `bg_BG`: ▰▰▰▰▰▰▰▰▱▱ 82% translated
+ - `de_DE`: ▰▰▰▰▰▰▰▰▱▱ 89% translated
+ - `ca_ES`: ▰▰▰▰▰▰▱▱▱▱ 69% translated
+ - `si_LK`: ▱▱▱▱▱▱▱▱▱▱ 3% translated (excluded, too incomplete)
+ - `hu_HU`: ▰▰▰▰▰▰▰▰▰▱ 93% translated
+ - `it_IT`: ▰▰▰▰▰▰▱▱▱▱ 61% translated
+ - `ru_RU`: ▰▰▰▰▰▰▰▰▰▱ 95% translated
+ - `sl_SI`: ▱▱▱▱▱▱▱▱▱▱ 0% translated (excluded, too incomplete)
+ - `id_ID`: ▰▰▰▰▰▰▰▰▱▱ 87% translated
+ - `th_TH`: ▰▱▱▱▱▱▱▱▱▱ 11% translated (excluded, too incomplete)
+ - `es_ES`: ▰▰▰▰▰▰▰▰▰▰ 100% translated
+ - `da_DK`: ▰▰▱▱▱▱▱▱▱▱ 29% translated
+ - `ja_JP`: ▱▱▱▱▱▱▱▱▱▱ 3% translated (excluded, too incomplete)
+ - `ta_IN`: ▱▱▱▱▱▱▱▱▱▱ 0% translated (excluded, too incomplete)

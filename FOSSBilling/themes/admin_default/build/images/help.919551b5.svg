@@ -1,8 +1,0 @@
-export default {
-      id: "help-usage",
-      viewBox: "0 0 24 24",
-      url: "symbol/" + "/home/runner/work/FOSSBilling/FOSSBilling/src/themes/admin_default/assets/icons/help.svg",
-      toString: function () {
-        return this.url;
-      }
-    }

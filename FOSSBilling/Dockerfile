@@ -1,40 +1,25 @@
-FROM node:22.20-alpine
+FROM php:8.3-apache
 
-# Coolify-ready production image:
-# - builds all apps
-# - runs nginx as a reverse proxy on port 80
-# - runs backend/workers/cron/frontend via pm2
+RUN a2enmod rewrite headers
 
-ARG NEXT_PUBLIC_VERSION
-ENV NEXT_PUBLIC_VERSION=$NEXT_PUBLIC_VERSION
+# PHP extensions (PostgreSQL + common deps)
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    libzip-dev \
+    unzip \
+  && docker-php-ext-install pdo_pgsql pgsql \
+  && docker-php-ext-install zip \
+  && rm -rf /var/lib/apt/lists/*
 
-# Provide a build-time DATABASE_URL so prisma generate during install doesn't fail.
-# (Coolify will inject the real one at runtime.)
-ARG DATABASE_URL=postgresql://postgres:postgres@localhost:5432/postiz?schema=public
-ENV DATABASE_URL=$DATABASE_URL
+WORKDIR /var/www/html
 
-RUN apk add --no-cache g++ make python3 bash nginx
-RUN adduser -D -g 'www' www
-RUN mkdir -p /www /uploads
-RUN chown -R www:www /var/lib/nginx /www /uploads
+# Copy source (vendor is already included in this repo snapshot)
+COPY . /var/www/html
 
-RUN npm --no-update-notifier --no-fund --global install pnpm@10.6.1 pm2
-
-WORKDIR /app
-COPY . /app
-
-# Nginx config for Coolify (port 80)
-COPY var/docker/nginx.coolify.conf /etc/nginx/nginx.conf
-
-RUN pnpm install
-RUN NODE_OPTIONS="--max-old-space-size=4096" pnpm run build
+# Apache: allow .htaccess overrides (FOSSBilling uses rewrite)
+RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
 
 EXPOSE 80
-
-# Runs:
-# - prisma db push (root script)
-# - pm2 processes (frontend/backend/workers/cron)
-# - nginx reverse proxy
-CMD ["sh", "-c", "nginx && pnpm run pm2-run"]
 
 

@@ -1,0 +1,27 @@
+{% extends 'layout_login.html.twig' %}
+
+{% block meta_title %}{{ 'Error'|trans }} {{ exception.getCode }}{% endblock %}
+
+{% block content %}
+<div class="page page-center">
+    <div class="container-tight py-4">
+        <div class="empty">
+            <h1 class="empty-header">{% if exception.getCode == 0 %}500{% else %}{{ exception.getCode }}{% endif %}</h1>
+            <p class="empty-title">{{ 'Oops... You just found an error page'|trans }}</p>
+            <p class="empty-subtitle text-muted">{{ exception.getMessage }}</p>
+            <div class="empty-action">
+                {% if exception.getCode == 403 and not admin %}
+                    <a href="{{ '/staff/login'|alink }}" class="btn btn-primary">{{ 'Login'|trans }}</a>
+                {% else %}
+                    <a href="{{ '/index'|alink }}" class="btn btn-primary">
+                        <svg class="icon">
+                            <use xlink:href="#arrow-sm-left" />
+                        </svg>
+                        {{ 'Back to Dashboard'|trans }}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,35 @@
+:root {
+  /* Velysion primary */
+  --velysion-primary: #A855F7;
+  --velysion-primary-600: #9333EA;
+  --velysion-primary-700: #7E22CE;
+}
+
+/* Buttons */
+.btn-primary,
+.btn.btn-primary {
+  background-color: var(--velysion-primary) !important;
+  border-color: var(--velysion-primary) !important;
+}
+.btn-primary:hover,
+.btn.btn-primary:hover,
+.btn-primary:focus,
+.btn.btn-primary:focus {
+  background-color: var(--velysion-primary-600) !important;
+  border-color: var(--velysion-primary-600) !important;
+}
+
+/* Links & accents */
+a,
+.link-primary,
+.text-primary {
+  color: var(--velysion-primary) !important;
+}
+
+/* Badges (primary) */
+.badge.bg-primary,
+.bg-primary {
+  background-color: var(--velysion-primary) !important;
+}
+
+
